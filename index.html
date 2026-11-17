@@ -6,53 +6,65 @@
 <title>Sistema Integrado GTO</title>
 <link rel="icon" type="image/png" href="assets/icono-cot.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-:root{--verde:#0A8A43;--verde2:#16A653;--texto:#1F2A24;--gris:#3C4540}
+:root{--verde:#0A8A43;--verde2:#16A653;--texto:#1A2420;--gris:#3C4540}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:#fff;color:var(--texto)}
+html,body{background:#F6F7F7;color:var(--texto)}
 body{font-family:Nunito,"Segoe UI",Arial,sans-serif}
 a{color:inherit;text-decoration:none}
 
-/* ===== Lienzo con el diseño original (escritorio) ===== */
-.lienzo{position:relative;width:100%;max-width:1672px;margin:0 auto;aspect-ratio:1672/941;background:url("assets/fondo-menu.jpg") center/100% 100% no-repeat;container-type:inline-size}
-.lienzo .card{position:absolute;width:calc(506/1672*100%);height:calc(189/941*100%)}
-.card{display:block;background:#fff;border-radius:1.05cqw;box-shadow:0 .25cqw .9cqw rgba(30,50,40,.13),0 0 0 .06cqw rgba(30,50,40,.06);overflow:hidden;transition:transform .15s,box-shadow .15s}
-.card:hover{transform:translateY(-.25cqw);box-shadow:0 .6cqw 1.6cqw rgba(10,138,67,.22),0 0 0 .1cqw rgba(10,138,67,.35)}
-.card:focus-visible{outline:.2cqw solid var(--verde);outline-offset:.2cqw}
-.card img{position:absolute;left:calc(14/506*100%);top:calc(16/189*100%);width:calc(100/506*100%);height:auto}
-.card h3{position:absolute;left:calc(134/506*100%);right:4%;top:calc(30/189*100%);font-weight:800;font-size:1.52cqw;line-height:1.18;color:var(--texto)}
-.card p{position:absolute;left:calc(22/506*100%);right:calc(90/506*100%);top:calc(124/189*100%);font-weight:600;font-size:1.04cqw;line-height:1.3;color:var(--gris)}
-.card .ir{position:absolute;right:0;bottom:0;width:calc(70/506*100%);height:calc(42/189*100%);background:linear-gradient(135deg,var(--verde2),#06612E);clip-path:polygon(32% 0,100% 0,100% 100%,0 100%);display:flex;align-items:center;justify-content:flex-end;padding-right:1.05cqw}
-.card .ir svg{width:1.35cqw;height:1.35cqw;color:#fff;display:block}
+/* ===== Lienzo (escritorio): diseño original de fondo ===== */
+.marco{display:flex;justify-content:center;align-items:center;min-height:100vh;background:#F6F7F7}
+.lienzo{position:relative;width:min(100vw,calc(100vh*1672/941));aspect-ratio:1672/941;background:url("assets/fondo-menu-v3.jpg") center/100% 100% no-repeat;container-type:inline-size}
 
-/* Posiciones (3 por fila, misma zona que las tarjetas originales) */
-.lienzo .p1{left:calc(58/1672*100%);top:calc(407/941*100%)} .lienzo .p2{left:calc(584/1672*100%);top:calc(407/941*100%)} .lienzo .p3{left:calc(1110/1672*100%);top:calc(407/941*100%)}
-.lienzo .p4{left:calc(58/1672*100%);top:calc(630/941*100%)} .lienzo .p5{left:calc(584/1672*100%);top:calc(630/941*100%)} .lienzo .p6{left:calc(1110/1672*100%);top:calc(630/941*100%)}
+.lienzo .card{position:absolute;height:calc(196/941*100%)}
+.card{display:block;background:#fff;border-radius:1.15cqw;box-shadow:0 .3cqw 1.1cqw rgba(30,50,40,.12),0 0 0 .06cqw rgba(30,50,40,.07);overflow:hidden;transition:transform .15s,box-shadow .15s}
+.card:hover{transform:translateY(-.3cqw);box-shadow:0 .7cqw 1.8cqw rgba(10,138,67,.22),0 0 0 .1cqw rgba(10,138,67,.4)}
+.card:focus-visible{outline:.2cqw solid var(--verde);outline-offset:.25cqw}
+.card img{position:absolute;left:3.4%;top:9%;width:20.5%;height:auto}
+.card h3{position:absolute;left:28.5%;right:4%;top:14%;font-weight:900;font-size:1.62cqw;line-height:1.17}
+.card p{position:absolute;left:4.6%;right:19%;top:62%;font-weight:600;font-size:1.1cqw;line-height:1.35;color:var(--gris)}
+.card .ir{position:absolute;right:0;bottom:0;width:14.5%;height:23%;background:linear-gradient(135deg,var(--verde2),#06612E);clip-path:polygon(30% 0,100% 0,100% 100%,0 100%);display:flex;align-items:center;justify-content:flex-end;padding-right:1.05cqw}
+.card .ir svg{width:1.4cqw;height:1.4cqw;color:#fff;display:block}
+
+.lienzo .c1{left:calc(624/1672*100%);width:calc(478/1672*100%)}
+.lienzo .c2{left:calc(1128/1672*100%);width:calc(495/1672*100%)}
+.lienzo .r1{top:calc(156/941*100%)} .lienzo .r2{top:calc(384/941*100%)} .lienzo .r3{top:calc(611/941*100%)}
+
+/* Reloj (reemplaza "Usuario GTO") */
+.reloj{position:absolute;right:calc(28/1672*100%);top:calc(20/941*100%);display:flex;align-items:center;gap:1cqw;background:rgba(255,255,255,.75);backdrop-filter:blur(4px);border:.06cqw solid #E1E8E4;border-radius:3cqw;padding:.55cqw 1.4cqw .55cqw .6cqw;box-shadow:0 .2cqw .8cqw rgba(30,50,40,.08)}
+.reloj .ico{width:3.1cqw;height:3.1cqw;border-radius:50%;background:linear-gradient(135deg,var(--verde2),#06612E);display:grid;place-items:center;color:#fff;flex:none}
+.reloj .ico svg{width:1.7cqw;height:1.7cqw}
+.reloj .hora{font-weight:900;font-size:2.05cqw;line-height:1;letter-spacing:.05cqw;font-variant-numeric:tabular-nums}
+.reloj .hora small{font-size:1.05cqw;color:var(--verde);font-weight:800;margin-left:.25cqw}
+.reloj .fecha{font-weight:700;font-size:.92cqw;color:var(--gris);margin-top:.2cqw}
+.reloj .sal{font-weight:800;font-size:.85cqw;color:var(--verde);border-left:.12cqw solid #DCE5E0;padding-left:1cqw;line-height:1.3}
 
 /* ===== Celular ===== */
 .movil{display:none}
-@media (max-width:760px){
-  .lienzo{display:none}
-  .movil{display:block}
-  .movil .top{display:block;width:100%;height:auto}
-  .movil .lista{display:grid;gap:14px;padding:18px 16px 22px}
-  .movil .card{position:relative;height:138px;border-radius:14px;box-shadow:0 4px 14px rgba(30,50,40,.13)}
-  .movil .card img{left:12px;top:12px;width:64px}
-  .movil .card h3{left:90px;top:16px;right:12px;font-size:18px}
-  .movil .card p{left:90px;top:auto;bottom:12px;right:64px;font-size:13px}
-  .movil .card .ir{width:56px;height:36px}
-  .movil .card .ir svg{width:18px;height:18px}
-  .movil .card .ir{padding-right:12px}
-  .movil .bottom{display:block;width:100%;height:auto}
+@media (max-width:760px), (max-aspect-ratio:1/1){
+  .marco{display:none}
+  .movil{display:block;background:#F6F7F7}
+  .movil .top{position:relative}
+  .movil .top img{display:block;width:100%;height:auto}
+  .movil .reloj{position:static;margin:14px 16px 0;padding:8px 16px 8px 8px;border-radius:40px;gap:12px}
+  .movil .reloj .ico{width:44px;height:44px}.movil .reloj .ico svg{width:22px;height:22px}
+  .movil .reloj .hora{font-size:26px}.movil .reloj .hora small{font-size:14px}
+  .movil .reloj .fecha{font-size:13px}.movil .reloj .sal{font-size:12px;padding-left:12px;border-left-width:2px}
+  .movil .lista{display:grid;gap:14px;padding:16px 16px 22px}
+  .movil .card{position:relative;height:140px;border-radius:16px;box-shadow:0 4px 14px rgba(30,50,40,.12)}
+  .movil .card img{left:12px;top:12px;width:66px}
+  .movil .card h3{left:92px;top:16px;right:12px;font-size:19px}
+  .movil .card p{left:92px;top:auto;bottom:12px;right:64px;font-size:13px}
+  .movil .card .ir{width:58px;height:38px;padding-right:13px}.movil .card .ir svg{width:18px;height:18px}
+  .movil .pie{display:block;width:100%;height:auto}
 }
 </style>
 </head>
 <body>
-<main>
-  <div class="lienzo" id="lienzo" aria-label="Sistema Integrado GTO PERÚ — selecciona un sistema para ingresar"></div>
-  <div class="movil"><img class="top" src="assets/cabecera-movil.jpg" alt="Sistema Integrado GTO PERÚ — Soluciones eléctricas y electrónicas para minería, industria y ferrovías"><div class="lista" id="lista"></div><img class="bottom" src="assets/pie-movil.jpg" alt=""></div>
-</main>
+<div class="marco"><div class="lienzo" id="lienzo" aria-label="Sistema Integrado GTO PERÚ — selecciona un sistema para ingresar"></div></div>
+<div class="movil"><div class="top"><img src="assets/cabecera-movil-v3.jpg" alt="Sistema Integrado GTO PERÚ — Minería, industria y ferrovías"></div><div id="relojMovil"></div><div class="lista" id="lista"></div><img class="pie" src="assets/pie-movil-v3.jpg" alt=""></div>
 <script>
 /* Editar aquí los sistemas (nombre, descripción, icono y dirección) */
 const SISTEMAS = [
@@ -64,10 +76,32 @@ const SISTEMAS = [
   { nombre:'GTO<br>Finanzas', desc:'Administra el presupuesto, ingresos, egresos y factoring.', icono:'assets/icono-finanzas.png', url:'https://gto-finanzas.vercel.app' },
 ];
 const flecha='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
-const tarjeta=(s,i)=>`<a class="card p${i+1}" href="${s.url}" target="_blank" rel="noopener" aria-label="${s.nombre.replace('<br>',' ')}">
+const reloj='<div class="reloj" role="timer" aria-live="off"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><div class="hora"><span data-h>--:--</span><small data-s></small></div><div class="fecha" data-f></div></div><div class="sal" data-g></div></div>';
+const tarjeta=(s,i)=>`<a class="card c${i%2+1} r${Math.floor(i/2)+1}" href="${s.url}" target="_blank" rel="noopener" aria-label="${s.nombre.replace('<br>',' ')}">
   <img src="${s.icono}" alt=""><h3>${s.nombre}</h3><p>${s.desc}</p><span class="ir">${flecha}</span></a>`;
-document.getElementById('lienzo').innerHTML=SISTEMAS.map(tarjeta).join('');
+document.getElementById('lienzo').innerHTML=reloj+SISTEMAS.map(tarjeta).join('');
 document.getElementById('lista').innerHTML=SISTEMAS.map(tarjeta).join('');
+document.getElementById('relojMovil').innerHTML=reloj;
+
+/* Hora de Perú (America/Lima), aunque el equipo tenga otra zona horaria */
+const TZ='America/Lima';
+const fH=new Intl.DateTimeFormat('es-PE',{timeZone:TZ,hour:'2-digit',minute:'2-digit',hour12:true});
+const fS=new Intl.DateTimeFormat('es-PE',{timeZone:TZ,second:'2-digit'});
+const fF=new Intl.DateTimeFormat('es-PE',{timeZone:TZ,weekday:'long',day:'numeric',month:'long',year:'numeric'});
+const fHH=new Intl.DateTimeFormat('es-PE',{timeZone:TZ,hour:'numeric',hour12:false});
+function tic(){
+  const d=new Date();
+  const partes=fH.formatToParts(d); const v=t=>(partes.find(p=>p.type===t)||{}).value||'';
+  const hm=v('hour')+':'+v('minute');
+  const ap=(partes.find(p=>p.type==='dayPeriod')||{}).value||'';
+  const h=+fHH.format(d); const saludo=h<12?'Buenos<br>días':h<19?'Buenas<br>tardes':'Buenas<br>noches';
+  const fecha=fF.format(d).replace(/^./,c=>c.toUpperCase());
+  document.querySelectorAll('[data-h]').forEach(e=>e.textContent=hm);
+  document.querySelectorAll('[data-s]').forEach(e=>e.textContent=fS.format(d).padStart(2,'0')+' '+ap.replace(/\./g,'').replace(/\s/g,'').toUpperCase());
+  document.querySelectorAll('[data-f]').forEach(e=>e.textContent=fecha);
+  document.querySelectorAll('[data-g]').forEach(e=>e.innerHTML=saludo);
+}
+tic(); setInterval(tic,1000);
 </script>
 </body>
 </html>
