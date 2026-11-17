@@ -95,7 +95,102 @@
     mounts.set(host,api);return api;
   }
   function otSource(client){return {async list(){const r=await client.rpc('gto_ot_actividad');if(r.error)throw r.error;return r.data;},async read(id){const r=await client.rpc('gto_ot_marcar_leida',{p_ot:id});if(r.error)throw r.error;}};}
-  global.GTOStatus={mount,otSource,notices,context};
+function mountToolbar(host, options={}) {
+ const previous=mounts.get(host); if(previous)return previous;
+ const shell=el('header','gto-shared-toolbar');
+ const brand=el('a','brand');brand.href='https://sistema-integrado-gto.vercel.app';
+ const logo=el('img');logo.src=BASE+'assets/logo-gto.png';logo.alt='GTO';
+ const name=el('span','','Sistema Integrado GTO');name.append(el('b','',options.module||'GTO'));brand.append(logo,name);
+ const CLIMA={lat:-16.41,lon:-71.54,lugar:'Arequipa'};
+ const TZ='America/Lima';
+const svg=(d,w=2.2)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const I={
+  flecha:svg('<path d="M9 5l7 7-7 7"/>',3.2),
+  reloj:svg('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
+  sol:svg('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),
+  nube:svg('<path d="M7 18h10a4 4 0 0 0 .6-7.96A6 6 0 0 0 6.1 9.2 4.5 4.5 0 0 0 7 18z"/>'),
+  solnube:svg('<path d="M8 3v1.5M3.5 8H5M4.8 4.8l1 1M12.2 4.8l-1 1"/><path d="M5.5 10.5a3 3 0 0 1 5.6-1.6"/><path d="M8.5 20h9a3.5 3.5 0 0 0 .5-6.96A5 5 0 0 0 8.3 12a3.9 3.9 0 0 0 .2 8z"/>'),
+  lluvia:svg('<path d="M7 15h10a4 4 0 0 0 .6-7.96A6 6 0 0 0 6.1 6.2 4.5 4.5 0 0 0 7 15z"/><path d="M8 18l-1 3M12 18l-1 3M16 18l-1 3"/>'),
+  tormenta:svg('<path d="M7 15h10a4 4 0 0 0 .6-7.96A6 6 0 0 0 6.1 6.2 4.5 4.5 0 0 0 7 15z"/><path d="M12 15l-2 4h3l-2 4"/>'),
+  niebla:svg('<path d="M4 9h16M3 13h18M5 17h14"/>'),
+  dolar:svg('<path d="M12 2v20"/><path d="M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>'),
+  campana:svg('<path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>'),
+  soporte:svg('<path d="M3 14v-3a9 9 0 0 1 18 0v3"/><path d="M21 15a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2 2z"/><path d="M3 15a2 2 0 0 0 2 2h1v-6H5a2 2 0 0 0-2 2z"/><path d="M18 17v1a3 3 0 0 1-3 3h-3"/>'),
+  completa:svg('<path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/>'),
+  salir:svg('<path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/>'),
+  wa:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg>',
+  basura:svg('<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14"/><path d="M10 11v6M14 11v6"/>'),
+  seguridad:svg('<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="m9 12 2 2 4-4"/>'),
+  visita:svg('<circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 4.5a3 3 0 0 1 0 6M21 20a5 5 0 0 0-4-4.9"/>'),
+  recojo:svg('<path d="M1 6h13v10H1z"/><path d="M14 9h4l3 3v4h-7"/><circle cx="5.5" cy="17.5" r="2"/><circle cx="17.5" cy="17.5" r="2"/>'),
+  mail:svg('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>'),
+};
+
+
+ const barra=`<div class="barra">
+  <div class="chip" title="Clima en ${CLIMA.lugar}"><span class="ico" data-cico>${I.solnube}</span><div><div class="v" data-ct>-- °C</div><div class="l" data-cl>${CLIMA.lugar}</div></div></div>
+  <div class="chip" title="Tipo de cambio del dólar"><span class="ico">${I.dolar}</span><div><div class="v" data-tc>S/ --</div><div class="l" data-tcl>Tipo de cambio</div></div></div>
+  <div class="chip reloj" role="timer"><span class="ico">${I.reloj}</span><div><div class="v"><span data-h>--:--</span><small data-s></small></div><div class="l" data-f></div></div><div class="sal" data-g></div></div>
+  <button class="btn" data-abrir="pAvisos" title="Recordatorios" aria-label="Recordatorios">${I.campana}<span class="badge" data-badge></span></button>
+  <button class="btn" data-abrir="pSoporte" title="Soporte de sistemas" aria-label="Soporte de sistemas">${I.soporte}</button>
+  <button class="btn" data-full title="Pantalla completa" aria-label="Pantalla completa">${I.completa}</button>
+</div>`;
+
+ const wrap=el('div');wrap.innerHTML=barra;shell.append(brand,wrap);host.append(shell);
+ const bellHost=el('div','gto-shared-bell');wrap.querySelector('[data-abrir=pAvisos]').replaceWith(bellHost);
+ const api=mount(bellHost,{...options,bellOnly:true});
+ const bell=bellHost.querySelector('button');bell.classList.add('btn');
+ Array.from(bell.childNodes).filter(n=>n.nodeType===3).forEach(n=>n.remove());
+ const set=(q,value)=>wrap.querySelectorAll(q).forEach(node=>{node.innerHTML=value;});
+ const fH=new Intl.DateTimeFormat('es-PE',{timeZone:TZ,hour:'2-digit',minute:'2-digit',hour12:true});
+const fS=new Intl.DateTimeFormat('es-PE',{timeZone:TZ,second:'2-digit'});
+const fF=new Intl.DateTimeFormat('es-PE',{timeZone:TZ,weekday:'long',day:'numeric',month:'long',year:'numeric'});
+const fHH=new Intl.DateTimeFormat('es-PE',{timeZone:TZ,hour:'numeric',hour12:false});
+function tic(){
+  const d=new Date(), p=fH.formatToParts(d), v=t=>(p.find(x=>x.type===t)||{}).value||'';
+  const ap=v('dayPeriod').replace(/[.\s]/g,'').toUpperCase();
+  const h=+fHH.format(d);
+  set('[data-h]',v('hour')+':'+v('minute'));
+  set('[data-s]',fS.format(d).padStart(2,'0')+' '+ap);
+  set('[data-f]',fF.format(d).replace(/^./,c=>c.toUpperCase()));
+  set('[data-g]',h<12?'Buenos<br>días':h<19?'Buenas<br>tardes':'Buenas<br>noches');
+}
+
+ function iconoClima(c){ if(c===0)return[I.sol,'Despejado']; if(c<=2)return[I.solnube,'Parcial nublado']; if(c===3)return[I.nube,'Nublado'];
+  if(c<=48)return[I.niebla,'Neblina']; if(c<=67||(c>=80&&c<=82))return[I.lluvia,'Lluvia']; if(c<=77)return[I.nube,'Nieve']; return[I.tormenta,'Tormenta']; }
+async function clima(){
+  try{
+    const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${CLIMA.lat}&longitude=${CLIMA.lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=${encodeURIComponent(TZ)}&forecast_days=1`);
+    const j=await r.json(); const [ic,txt]=iconoClima(j.current.weather_code);
+    set('[data-cico]',ic); set('[data-ct]',Math.round(j.current.temperature_2m)+' °C');
+    set('[data-cl]',`${CLIMA.lugar} · ${txt} · ${Math.round(j.daily.temperature_2m_min[0])}°/${Math.round(j.daily.temperature_2m_max[0])}°`);
+  }catch(e){ set('[data-cl]',CLIMA.lugar+' · sin datos'); }
+}
+
+ const n3=x=>Number(x).toFixed(3);
+async function tipoCambio(){
+  try{
+    const r=await fetch('https://api.apis.net.pe/v1/tipo-cambio-sunat'); if(!r.ok) throw 0;
+    const j=await r.json(); if(!j.venta) throw 0;
+    set('[data-tc]',`S/ ${n3(j.venta)}<small>V</small>`); set('[data-tcl]',`SUNAT · compra ${n3(j.compra)}`); return;
+  }catch(e){}
+  try{
+    const r=await fetch('https://open.er-api.com/v6/latest/USD'); const j=await r.json();
+    set('[data-tc]',`S/ ${n3(j.rates.PEN)}`); set('[data-tcl]','Dólar · referencial');
+  }catch(e){ set('[data-tcl]','Tipo de cambio · sin datos'); }
+}
+
+ const support=wrap.querySelector('[data-abrir=pSoporte]');
+ support.onclick=()=>{location.href='https://sistema-integrado-gto.vercel.app/#soporte';};
+ const full=wrap.querySelector('[data-full]');
+ full.onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{}};
+ tic();clima();tipoCambio();
+ const timers=[setInterval(tic,1000),setInterval(clima,1800000),setInterval(tipoCambio,3600000)];
+ const result={refresh:api.refresh,dispose(){timers.forEach(clearInterval);api.dispose();shell.remove();mounts.delete(host);}};
+ mounts.set(host,result);return result;
+}
+  const mountView=(host,options={})=>options.bellOnly?mount(host,options):mountToolbar(host,options);
+  global.GTOStatus={mount:mountView,otSource,notices,context};
   const script=document.currentScript;
   if(script.dataset.gtoTarget){
     let host=null, api=null, owner=null;
@@ -107,7 +202,7 @@
       owner=target;host=el('div');
       if(script.dataset.gtoBellOnly!==undefined){target.replaceWith(host);}else target.after(host);
       const client=global.DirectorioGTO_opts?.sb;
-      api=mount(host,{module:script.dataset.gtoModule,bellOnly:script.dataset.gtoBellOnly!==undefined,activityNote:script.dataset.gtoActivityNote,source:script.dataset.gtoActivity==='ot'&&client?otSource(client):null});
+      api=mountView(host,{module:script.dataset.gtoModule,bellOnly:script.dataset.gtoBellOnly!==undefined,activityNote:script.dataset.gtoActivityNote,source:script.dataset.gtoActivity==='ot'&&client?otSource(client):null});
       // Bell replacement target is intentionally gone: observe its containing toolbar instead.
       if(script.dataset.gtoBellOnly!==undefined)owner=host;
     }
