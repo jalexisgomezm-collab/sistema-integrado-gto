@@ -282,6 +282,7 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape') cerrar(); });
 document.addEventListener('fullscreenchange',()=>{ const on=!!document.fullscreenElement;
   $$('[data-full]').forEach(b=>{ b.innerHTML=on?I.salir:I.completa; b.title=on?'Salir de pantalla completa':'Pantalla completa'; }); });
 </script>
+<script src="gto-status.js" data-gto-target="[data-abrir=pAvisos]" data-gto-bell-only data-gto-module="Portal GTO"></script>
 </body>
 </html>
 
