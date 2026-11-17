@@ -1,0 +1,11 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),vm=require('node:vm');
+const context={window:{},document:{currentScript:{src:'https://example.com/gto-status.js',dataset:{}}},URL,Intl,Date};
+vm.runInNewContext(fs.readFileSync(__dirname+'/../gto-status.js','utf8'),context);
+const api=context.window.GTOStatus;
+test('Lima day and weekday do not follow UTC midnight',()=>{const c=api.context(new Date('2026-11-18T01:00:00Z'));assert.equal(c.day,'2026-11-17');assert.equal(c.weekday,2);assert.equal(c.hm,'20:00');});
+test('weekly warning activates the prior afternoon and ends at cutoff in Lima',()=>{const fixed=[{dias:[3],desde:'00:00',hasta:'12:00',previo:true,titulo:'Hoy',tituloPrevio:'Mañana'}];assert.equal(api.notices(new Date('2026-11-17T19:59:00Z'),{fixed}).length,0);assert.equal(api.notices(new Date('2026-11-17T20:00:00Z'),{fixed})[0].title,'Mañana');assert.equal(api.notices(new Date('2026-11-18T16:59:00Z'),{fixed})[0].title,'Hoy');assert.equal(api.notices(new Date('2026-11-18T17:01:00Z'),{fixed}).length,0);});
+test('dated notices expire by Lima date and use a 30 day horizon',()=>{const events=[{fecha:'2026-11-16',titulo:'Pasado'},{fecha:'2026-11-18',titulo:'Mañana'},{fecha:'2027-01-01',titulo:'Fuera'}];const items=api.notices(new Date('2026-11-17T20:00:00Z'),{events});assert.equal(items.length,1);assert.equal(items[0].label,'Mañana');assert.equal(items[0].active,true);});
+test('empty source data creates no fake notices',()=>assert.equal(api.notices(new Date(),{}).length,0));
+test('OT adapter reports backend errors instead of pretending success',async()=>{const src=api.otSource({rpc:async()=>({error:Error('not installed')})});await assert.rejects(src.list(),/not installed/);await assert.rejects(src.read('x'),/not installed/);});
