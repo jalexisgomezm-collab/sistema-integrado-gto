@@ -1,0 +1,165 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&family=IBM+Plex+Mono:wght@500;600&display=swap");
+/* GTO UI v1 — Sistema Integrado GTO. Guía: claude.ai Design System "Sistema Integrado GTO".
+   Cargar con: <link rel="stylesheet" href="https://sistema-integrado-gto.vercel.app/gto-ui.css">
+   Variables con prefijo --gto- para no chocar con los estilos propios de cada sistema. */
+:root{
+  --gto-verde-900: #053B1E;
+  --gto-verde-800: #06612E;
+  --gto-verde-700: #077A3A;
+  --gto-verde-600: #0A8A43;
+  --gto-verde-500: #16A653;
+  --gto-verde-100: #E8F5EC;
+  --gto-verde-050: #F2FAF5;
+  --gto-fondo: #F6F7F7;
+  --gto-superficie: #FFFFFF;
+  --gto-borde: #E1E8E4;
+  --gto-borde-fuerte: #9AA49E;
+  --gto-tinta: #1A2420;
+  --gto-tinta-2: #3C4540;
+  --gto-tinta-3: #636E68;
+  --gto-blanco: #FFFFFF;
+  --gto-pendiente: #9A4A00;
+  --gto-pendiente-fondo: #FFF1D6;
+  --gto-proceso: #1B56C2;
+  --gto-proceso-fondo: #E3EDFF;
+  --gto-aprobado: #066A33;
+  --gto-rechazado: #B4232A;
+  --gto-rechazado-fondo: #FDE6E6;
+  --gto-anulado: #5B6660;
+  --gto-anulado-fondo: #ECEFED;
+  --gto-esp-1: 4px;
+  --gto-esp-2: 8px;
+  --gto-esp-3: 12px;
+  --gto-esp-4: 16px;
+  --gto-esp-5: 24px;
+  --gto-esp-6: 32px;
+  --gto-esp-7: 48px;
+  --gto-radio-sm: 8px;
+  --gto-radio-md: 12px;
+  --gto-radio-lg: 16px;
+  --gto-radio-pill: 999px;
+  --gto-sombra-tarjeta: 0 4px 16px rgba(30, 50, 40, 0.10);
+  --gto-sombra-flotante: 0 20px 50px rgba(10, 30, 20, 0.25);
+  --gto-sombra-hover: 0 10px 26px rgba(10, 138, 67, 0.20);
+  --gto-font-sans: "Nunito", "Segoe UI", Arial, sans-serif;
+  --gto-font-mono: "IBM Plex Mono", Consolas, "Courier New", monospace;
+}
+/* GTO UI — hoja común del Sistema Integrado GTO. Usa los tokens de tokens.css. */
+
+.gto, .gto * { box-sizing: border-box; }
+.gto { font-family: var(--gto-font-sans); color: var(--gto-tinta); background: var(--gto-fondo); font-size: 15px; line-height: 22px; font-weight: 500; }
+.gto :focus-visible { outline: 3px solid var(--gto-verde-600); outline-offset: 2px; }
+.gto .gto-codigo { font-family: var(--gto-font-mono); font-size: 13px; font-weight: 600; color: var(--gto-verde-700); letter-spacing: .01em; }
+.gto .gto-num { font-variant-numeric: tabular-nums; }
+
+/* ---------- Botones ---------- */
+.gto .gto-btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--gto-esp-2); height: 44px; padding: 0 var(--gto-esp-5); border-radius: var(--gto-radio-md); border: 1.5px solid transparent; font: 800 15px/1 var(--gto-font-sans); cursor: pointer; text-decoration: none; transition: background .15s, border-color .15s, color .15s; white-space: nowrap; }
+.gto .gto-btn svg { width: 18px; height: 18px; }
+.gto .gto-btn--primario { background: var(--gto-verde-700); color: var(--gto-blanco); }
+.gto .gto-btn--primario:hover { background: var(--gto-verde-800); }
+.gto .gto-btn--secundario { background: var(--gto-superficie); color: var(--gto-verde-700); border-color: var(--gto-verde-600); }
+.gto .gto-btn--secundario:hover { background: var(--gto-verde-050); }
+.gto .gto-btn--texto { background: transparent; color: var(--gto-verde-700); padding: 0 var(--gto-esp-3); }
+.gto .gto-btn--texto:hover { background: var(--gto-verde-050); }
+.gto .gto-btn--peligro { background: var(--gto-rechazado); color: var(--gto-blanco); }
+.gto .gto-btn--peligro:hover { filter: brightness(.9); }
+.gto .gto-btn--sm { height: 36px; padding: 0 var(--gto-esp-4); font-size: 14px; border-radius: var(--gto-radio-sm); }
+.gto .gto-btn--icono { width: 40px; height: 40px; padding: 0; border-radius: var(--gto-radio-pill); background: var(--gto-superficie); color: var(--gto-verde-600); border-color: var(--gto-borde); }
+.gto .gto-btn--icono:hover { background: var(--gto-verde-050); color: var(--gto-verde-800); }
+.gto .gto-btn[disabled] { background: var(--gto-anulado-fondo); color: var(--gto-anulado); border-color: transparent; cursor: not-allowed; }
+
+/* ---------- Campos ---------- */
+.gto .gto-campo { display: grid; gap: 6px; }
+.gto .gto-campo label { font: 700 13px/18px var(--gto-font-sans); color: var(--gto-tinta-2); }
+.gto .gto-campo label .req { color: var(--gto-rechazado); }
+.gto .gto-input, .gto .gto-select, .gto .gto-textarea { width: 100%; height: 44px; padding: 0 var(--gto-esp-3); border: 1.5px solid var(--gto-borde); border-radius: var(--gto-radio-sm); background: var(--gto-superficie); color: var(--gto-tinta); font: 500 15px var(--gto-font-sans); transition: border-color .15s, box-shadow .15s; }
+.gto .gto-textarea { height: auto; min-height: 96px; padding: var(--gto-esp-3); resize: vertical; }
+.gto .gto-input:hover, .gto .gto-select:hover, .gto .gto-textarea:hover { border-color: var(--gto-borde-fuerte); }
+.gto .gto-input:focus, .gto .gto-select:focus, .gto .gto-textarea:focus { outline: none; border-color: var(--gto-verde-600); box-shadow: 0 0 0 3px var(--gto-verde-100); }
+.gto .gto-input::placeholder { color: var(--gto-tinta-3); }
+.gto .gto-ayuda { font: 600 13px/18px var(--gto-font-sans); color: var(--gto-tinta-3); }
+.gto .gto-campo--error .gto-input { border-color: var(--gto-rechazado); }
+.gto .gto-campo--error .gto-ayuda { color: var(--gto-rechazado); }
+
+/* ---------- Estados ---------- */
+.gto .gto-estado { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: var(--gto-radio-pill); font: 800 12px/1 var(--gto-font-sans); letter-spacing: .02em; white-space: nowrap; }
+.gto .gto-estado::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.gto .gto-estado--pendiente { color: var(--gto-pendiente); background: var(--gto-pendiente-fondo); }
+.gto .gto-estado--proceso { color: var(--gto-proceso); background: var(--gto-proceso-fondo); }
+.gto .gto-estado--aprobado { color: var(--gto-aprobado); background: var(--gto-verde-100); }
+.gto .gto-estado--rechazado { color: var(--gto-rechazado); background: var(--gto-rechazado-fondo); }
+.gto .gto-estado--anulado { color: var(--gto-anulado); background: var(--gto-anulado-fondo); }
+
+/* ---------- Tarjeta ---------- */
+.gto .gto-card { background: var(--gto-superficie); border: 1px solid var(--gto-borde); border-radius: var(--gto-radio-lg); box-shadow: var(--gto-sombra-tarjeta); padding: var(--gto-esp-5); }
+
+/* ---------- Tarjeta de sistema (menú) ---------- */
+.gto .gto-sistema { position: relative; display: grid; grid-template-columns: 84px 1fr; gap: 6px 16px; align-items: center; background: var(--gto-superficie); border: 1px solid var(--gto-borde); border-radius: var(--gto-radio-lg); box-shadow: var(--gto-sombra-tarjeta); padding: var(--gto-esp-4) 64px var(--gto-esp-5) var(--gto-esp-4); text-decoration: none; color: var(--gto-tinta); overflow: hidden; transition: transform .15s, box-shadow .15s, border-color .15s; }
+.gto .gto-sistema:hover { transform: translateY(-3px); box-shadow: var(--gto-sombra-hover); border-color: var(--gto-verde-600); }
+.gto .gto-sistema img { width: 84px; height: 84px; grid-row: span 2; }
+.gto .gto-sistema h3 { margin: 0; font: 900 19px/24px var(--gto-font-sans); }
+.gto .gto-sistema p { margin: 0; font: 600 14px/20px var(--gto-font-sans); color: var(--gto-tinta-2); }
+.gto .gto-sistema .ir { position: absolute; right: 0; bottom: 0; width: 64px; height: 40px; background: linear-gradient(135deg, var(--gto-verde-500), var(--gto-verde-800)); clip-path: polygon(30% 0, 100% 0, 100% 100%, 0 100%); display: flex; align-items: center; justify-content: flex-end; padding-right: 16px; color: var(--gto-blanco); }
+.gto .gto-sistema .ir svg { width: 18px; height: 18px; }
+
+/* ---------- Barra superior ---------- */
+.gto .gto-barra { display: flex; align-items: center; gap: var(--gto-esp-4); height: 64px; padding: 0 var(--gto-esp-5); background: var(--gto-verde-800); color: var(--gto-blanco); }
+.gto .gto-barra .placa { background: var(--gto-superficie); border-radius: var(--gto-radio-sm); padding: 6px 10px; display: flex; }
+.gto .gto-barra .placa img { height: 30px; width: auto; display: block; }
+.gto .gto-barra .sistema { display: flex; align-items: center; gap: 10px; font: 900 18px/1 var(--gto-font-sans); }
+.gto .gto-barra .sistema img { width: 36px; height: 36px; border-radius: 50%; background: var(--gto-superficie); }
+.gto .gto-barra .sep { width: 1px; height: 32px; background: rgba(255,255,255,.25); }
+.gto .gto-barra .der { margin-left: auto; display: flex; align-items: center; gap: var(--gto-esp-3); }
+.gto .gto-barra .usuario { text-align: right; line-height: 1.2; }
+.gto .gto-barra .usuario b { display: block; font: 800 14px var(--gto-font-sans); }
+.gto .gto-barra .usuario span { font: 600 12px var(--gto-font-sans); opacity: .85; }
+.gto .gto-barra .gto-btn--barra { height: 38px; padding: 0 var(--gto-esp-4); border-radius: var(--gto-radio-pill); background: rgba(255,255,255,.12); color: var(--gto-blanco); border: 1px solid rgba(255,255,255,.3); font: 800 14px/1 var(--gto-font-sans); display: inline-flex; align-items: center; gap: 8px; cursor: pointer; text-decoration: none; }
+.gto .gto-barra .gto-btn--barra:hover { background: rgba(255,255,255,.22); }
+.gto .gto-barra .gto-btn--barra svg { width: 18px; height: 18px; }
+
+/* ---------- Tabla ---------- */
+.gto .gto-tabla-caja { background: var(--gto-superficie); border: 1px solid var(--gto-borde); border-radius: var(--gto-radio-lg); box-shadow: var(--gto-sombra-tarjeta); overflow: auto; }
+.gto .gto-tabla { width: 100%; border-collapse: collapse; font: 500 14px/20px var(--gto-font-sans); color: var(--gto-tinta-2); }
+.gto .gto-tabla th { background: var(--gto-verde-100); color: var(--gto-aprobado); font: 800 12px/16px var(--gto-font-sans); letter-spacing: .08em; text-transform: uppercase; text-align: left; padding: 12px var(--gto-esp-4); white-space: nowrap; }
+.gto .gto-tabla td { padding: 12px var(--gto-esp-4); border-top: 1px solid var(--gto-borde); vertical-align: middle; }
+.gto .gto-tabla tbody tr:hover td { background: var(--gto-verde-050); }
+.gto .gto-tabla .monto { text-align: right; font-variant-numeric: tabular-nums; color: var(--gto-tinta); font-weight: 700; white-space: nowrap; }
+.gto .gto-tabla .acciones { text-align: right; white-space: nowrap; }
+.gto .gto-tabla-pie { padding: 10px var(--gto-esp-4); border-top: 1px solid var(--gto-borde); font: 600 13px/18px var(--gto-font-sans); color: var(--gto-tinta-3); }
+
+/* ---------- Avisos ---------- */
+.gto .gto-aviso { display: flex; align-items: flex-start; gap: var(--gto-esp-3); padding: 14px var(--gto-esp-4); border-radius: var(--gto-radio-md); background: var(--gto-superficie); box-shadow: var(--gto-sombra-flotante); border: 1px solid var(--gto-borde); max-width: 420px; }
+.gto .gto-aviso .i { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; flex: none; color: var(--gto-blanco); }
+.gto .gto-aviso .i svg { width: 18px; height: 18px; }
+.gto .gto-aviso b { display: block; font: 800 15px/20px var(--gto-font-sans); color: var(--gto-tinta); }
+.gto .gto-aviso p { margin: 2px 0 0; font: 600 14px/20px var(--gto-font-sans); color: var(--gto-tinta-2); }
+.gto .gto-aviso--exito .i { background: var(--gto-verde-700); }
+.gto .gto-aviso--error { background: var(--gto-rechazado-fondo); border-color: transparent; }
+.gto .gto-aviso--error .i { background: var(--gto-rechazado); }
+.gto .gto-aviso--info .i { background: var(--gto-proceso); }
+
+/* ---------- Inicio de sesión ---------- */
+.gto .gto-login { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); min-height: 100%; background: var(--gto-fondo); }
+.gto .gto-login .panel { position: relative; background: var(--gto-verde-900) left top / cover no-repeat; color: var(--gto-blanco); overflow: hidden; }
+.gto .gto-login .form { display: grid; place-items: center; padding: var(--gto-esp-6) var(--gto-esp-5); }
+.gto .gto-login .caja { width: min(380px, 100%); display: grid; gap: var(--gto-esp-4); }
+.gto .gto-login .marca { display: flex; align-items: center; gap: 12px; }
+.gto .gto-login .marca img { width: 56px; height: 56px; }
+.gto .gto-login .marca small { display: block; font: 800 12px/16px var(--gto-font-sans); letter-spacing: .08em; text-transform: uppercase; color: var(--gto-tinta-3); }
+.gto .gto-login .marca b { font: 900 24px/28px var(--gto-font-sans); color: var(--gto-tinta); }
+.gto .gto-login .olvido { justify-self: end; font: 700 13px var(--gto-font-sans); color: var(--gto-verde-700); text-decoration: none; }
+.gto .gto-login .volver { justify-self: center; font: 700 13px var(--gto-font-sans); color: var(--gto-tinta-3); text-decoration: none; }
+@media (max-width: 760px) {
+  .gto .gto-login { grid-template-columns: 1fr; }
+  .gto .gto-login .panel { min-height: 180px; background-position: top center; }
+}
+
+.gto [hidden] { display: none !important; }
+.gto a { text-decoration: none; }
+.gto a:hover { text-decoration: underline; }
+.gto .gto-btn:hover { text-decoration: none; }
+
+/* ---------- Segmento (pestañas de dos o tres opciones) ---------- */
+.gto .gto-segmento { display: flex; gap: 4px; padding: 4px; border-radius: var(--gto-radio-md); background: var(--gto-anulado-fondo); }
+.gto .gto-segmento button { display: flex; align-items: center; justify-content: center; flex: 1; height: 38px; border: 0; border-radius: var(--gto-radio-sm); background: transparent; color: var(--gto-tinta-2); font: 800 14px/1 var(--gto-font-sans); cursor: pointer; }
+.gto .gto-segmento button.on { background: var(--gto-superficie); color: var(--gto-verde-700); box-shadow: 0 1px 4px rgba(30, 50, 40, 0.12); }
