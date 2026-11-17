@@ -33,7 +33,7 @@
   }
   function mount(host, options={}) {
     if(mounts.has(host))return mounts.get(host);
-    const css=BASE+'gto-status.css?v=20261117-3';
+    const css=BASE+'gto-status.css?v=20261117-4';
     if(!Array.from(document.querySelectorAll('link[rel=stylesheet]')).some(l=>l.href===css)){const l=el('link');l.rel='stylesheet';l.href=css;document.head.append(l);}
     const root=el('div','gto-status'+(options.bellOnly?' gto-status-bell-only':''));
     root.setAttribute('aria-label','Hora de Perú y notificaciones');
@@ -193,10 +193,86 @@ async function tipoCambio(){
  support.onclick=()=>{location.href='https://sistema-integrado-gto.vercel.app/#soporte';};
  const full=wrap.querySelector('[data-full]');
  full.onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{}};
+
+ const moduleName=options.module;
+ const quick=el('nav','gto-toolbar-quick');
+ quick.setAttribute('aria-label','Accesos del módulo');
+ shell.insertBefore(quick,wrap);
+ const toolsMenu=el('details','gto-toolbar-menu');
+ const previousHeader=host.previousElementSibling;
+ const originalHeader=host.closest('header.top')||(previousHeader?.matches('.workspace-topbar')?previousHeader:null);
+ const logout=originalHeader?.querySelector('#logout,#b-out')||
+   document.querySelector('.sidebar-logout,.signout-button')||
+   (moduleName==='Logística y Compras'?Array.from(document.querySelectorAll('aside button')).find(b=>/^(cerrar sesión|salir)$/i.test(b.textContent.trim())):null);
+ const account=originalHeader?.querySelector('.workspace-person b,.user span,.user')?.textContent.trim();
+ const toolsSummary=el('summary','',account?'Mi cuenta':'Herramientas');
+ toolsMenu.append(toolsSummary);
+ const toolPanel=el('div','gto-toolbar-popover');
+ toolsMenu.append(toolPanel);
+ if(account)toolPanel.append(el('strong','gto-toolbar-account',account));
+ const moved=[];
+ function addAction(container,label,action){
+   const button=el('button','gto-toolbar-action',label);
+   button.type='button';button.onclick=action;container.append(button);
+ }
+ function mirror(container,label,control,hide=false){
+   if(!control)return;
+   if(control instanceof HTMLAnchorElement && control.href && control.getAttribute('href')!=='#' && !control.hasAttribute('data-directorio-gto')){
+     const a=el('a','gto-toolbar-action',label);a.href=control.href;
+     if(control.target){a.target=control.target;a.rel='noopener noreferrer';}
+     container.append(a);
+   }else addAction(container,label,()=>control.click());
+   if(hide){control.setAttribute('data-gto-mirrored','');moved.push(control);}
+ }
+ function link(path){return Array.from(document.querySelectorAll('nav a[href],aside a[href]')).find(a=>a.getAttribute('href')===path);}
+ if(moduleName==='Maestro de Gestión'){
+   const actions=Array.from(originalHeader?.querySelectorAll(':scope > a,:scope > button')||[]);
+   mirror(quick,'Correos',actions.find(a=>a.matches('[data-directorio-gto]')||/Correos/i.test(a.textContent)),true);
+   mirror(quick,'Sistema OC',actions.find(a=>/Sistema OC/i.test(a.textContent)),true);
+ }else if(moduleName==='Cotizaciones'){
+   mirror(quick,'Nueva cotización',link('/nueva'));
+   mirror(quick,'Historial',link('/historial'));
+ }else if(moduleName==='Logística y Compras'){
+   mirror(quick,'Solicitudes',link('/solicitudes'));
+   mirror(quick,'Órdenes de compra',link('/ordenes'));
+ }else if(moduleName==='Bitácora Técnica'){
+   mirror(quick,'Mi día',link('#/dia')||link('#/'));
+   mirror(quick,'Órdenes de trabajo',link('#/ot'));
+ }else if(moduleName==='RR. HH. y Personal'){
+   addAction(quick,'Inicio',()=>{location.hash='/inicio';});
+ }else if(moduleName==='Finanzas'){
+   for(const label of ['Resumen','Presupuesto']){
+     const control=Array.from(document.querySelectorAll('aside button')).find(b=>b.textContent.trim().includes(label));
+     mirror(quick,label,control);
+   }
+ }
+ if(!quick.childElementCount)quick.hidden=true;
+ const actionsBar=wrap.querySelector('.barra');
+ const indicators=el('details','gto-toolbar-menu gto-toolbar-indicators');
+ const indicatorPanel=el('div','gto-toolbar-popover');
+ indicators.append(el('summary','','Indicadores'),indicatorPanel);
+ for(const chip of actionsBar.querySelectorAll('.chip:not(.reloj)'))indicatorPanel.append(chip);
+ actionsBar.prepend(indicators);
+ support.hidden=true;full.hidden=true;
+ addAction(toolPanel,'Soporte de sistemas',()=>support.click());
+ addAction(toolPanel,'Pantalla completa',()=>{toolsMenu.open=false;full.click();});
+ const portal=el('a','gto-toolbar-action','Menú GTO');portal.href='https://sistema-integrado-gto.vercel.app';toolPanel.append(portal);
+ if(logout)mirror(toolPanel,'Salir',logout,!!originalHeader?.contains(logout));
+ actionsBar.append(toolsMenu);
+ for(const panel of [indicators,toolsMenu]){
+   panel.ontoggle=()=>{if(panel.open){for(const other of [indicators,toolsMenu])if(other!==panel)other.open=false;}};
+ }
+ const closeMenus=e=>{for(const panel of [indicators,toolsMenu]){
+   if(e.type==='keydown'&&e.key==='Escape'&&panel.open){panel.open=false;panel.querySelector('summary').focus();}
+   if(e.type==='click'&&!panel.contains(e.target))panel.open=false;
+ }};
+ document.addEventListener('click',closeMenus);
+ document.addEventListener('keydown',closeMenus);
+
  tic();clima();if(!isBitacora)tipoCambio();
  const timers=[setInterval(tic,1000),setInterval(clima,1800000)];
  if(!isBitacora)timers.push(setInterval(tipoCambio,3600000));
- const result={refresh:api.refresh,dispose(){timers.forEach(clearInterval);api.dispose();shell.remove();mounts.delete(host);}};
+ const result={refresh:api.refresh,dispose(){timers.forEach(clearInterval);document.removeEventListener('click',closeMenus);document.removeEventListener('keydown',closeMenus);moved.forEach(node=>node.removeAttribute('data-gto-mirrored'));api.dispose();shell.remove();mounts.delete(host);}};
  mounts.set(host,result);return result;
 }
   const mountView=(host,options={})=>options.bellOnly?mount(host,options):mountToolbar(host,options);
