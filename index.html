@@ -281,6 +281,7 @@ document.addEventListener('click',e=>{
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') cerrar(); });
 document.addEventListener('fullscreenchange',()=>{ const on=!!document.fullscreenElement;
   $$('[data-full]').forEach(b=>{ b.innerHTML=on?I.salir:I.completa; b.title=on?'Salir de pantalla completa':'Pantalla completa'; }); });
+if(location.hash==='#soporte'){const button=document.querySelector('[data-abrir=pSoporte]');if(button)abrir('pSoporte',button);}
 </script>
 </body>
 </html>
