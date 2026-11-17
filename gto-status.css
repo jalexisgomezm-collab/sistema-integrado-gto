@@ -28,3 +28,25 @@ header.top.gto-integrated-header > :last-child{margin-inline:0}
 .gto-shared-toolbar .barra button.btn{border-radius:50%;padding:0;width:44px;height:44px;min-height:44px;display:grid;place-items:center}
 .gto-shared-toolbar .gto-ot-shortcut{color:#06612E}.gto-ot-shortcut .l{display:block}
 @media(max-width:900px){.ops-shell:has(.gto-integrated-header) .ops-sidebar{height:auto}}
+
+/* Hide redundant module branding only once the shared toolbar is mounted. */
+.workspace-topbar:has(+ div > .gto-shared-toolbar[data-gto-module="Cotizaciones"]){
+ height:auto;min-height:38px;padding:5px 28px;position:relative;top:auto;
+ background:#F2FAF5;color:#1A2420;box-shadow:none;
+}
+.workspace-topbar:has(+ div > .gto-shared-toolbar[data-gto-module="Cotizaciones"]) > :is(.workspace-logo,.workspace-identity){display:none}
+.workspace-topbar:has(+ div > .gto-shared-toolbar[data-gto-module="Cotizaciones"]) :is(.workspace-menu,.workspace-person span){color:#06612E}
+.workspace-topbar:has(+ div > .gto-shared-toolbar[data-gto-module="Cotizaciones"]) .workspace-menu{background:#fff;border-color:#CBE1D3;padding:4px 12px}
+.app-shell:has(.gto-shared-toolbar[data-gto-module="Cotizaciones"]) .workspace-body .sidebar{top:0;height:100svh}
+body:has(.gto-shared-toolbar[data-gto-module="Logística y Compras"]) aside > div:first-child:has(> img[src="/logo-gto.png"]){display:none}
+body:has(.gto-shared-toolbar[data-gto-module="Logística y Compras"]) aside > nav{padding-top:18px}
+.dashboard:has(.gto-shared-toolbar[data-gto-module="Finanzas"]) .topbar{position:relative;top:auto}
+body:has(.gto-shared-toolbar[data-gto-module="Finanzas"]) aside button.brand:has(.sidebar-logo){display:none}
+header.top.gto-integrated-header:has([data-gto-module="RR. HH. y Personal"]) > :is(nav,.user,.menu-btn){color:inherit}
+header.top.gto-integrated-header:has([data-gto-module="RR. HH. y Personal"]) > .user{padding-inline:12px}
+.gto-shared-toolbar{padding-block:12px}
+.gto-shared-toolbar .gto-toolbar-brand img{width:clamp(112px,11vw,182px)}
+@media(max-width:850px){
+ .app-shell:has(.gto-shared-toolbar[data-gto-module="Cotizaciones"]) .workspace-body .sidebar{height:auto;top:auto}
+ .gto-shared-toolbar .barra{justify-content:flex-start}
+}

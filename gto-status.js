@@ -33,7 +33,7 @@
   }
   function mount(host, options={}) {
     if(mounts.has(host))return mounts.get(host);
-    const css=BASE+'gto-status.css';
+    const css=BASE+'gto-status.css?v=20261117-3';
     if(!Array.from(document.querySelectorAll('link[rel=stylesheet]')).some(l=>l.href===css)){const l=el('link');l.rel='stylesheet';l.href=css;document.head.append(l);}
     const root=el('div','gto-status'+(options.bellOnly?' gto-status-bell-only':''));
     root.setAttribute('aria-label','Hora de Perú y notificaciones');
@@ -98,7 +98,8 @@
 function mountToolbar(host, options={}) {
  const previous=mounts.get(host); if(previous)return previous;
  const shell=el('div','gto-shared-toolbar');
- const brand=el('a','gto-toolbar-brand');brand.href='https://sistema-integrado-gto.vercel.app';
+ shell.dataset.gtoModule=options.module||'GTO';
+ const brand=el('a','gto-toolbar-brand');brand.href=options.home||'https://sistema-integrado-gto.vercel.app';
  const logo=el('img');logo.src=BASE+'assets/logo-gto.png';logo.alt='GTO';
  const name=el('span','','Sistema Integrado GTO');name.append(el('b','',options.module||'GTO'));brand.append(logo,name);
  const CLIMA={lat:-16.41,lon:-71.54,lugar:'Arequipa'};
@@ -209,13 +210,13 @@ async function tipoCambio(){
       api?.dispose();host?.remove();api=host=owner=null;
       if(!target)return;
       owner=target;host=el('div');
-      if(script.dataset.gtoBellOnly!==undefined){target.replaceWith(host);}else if(script.dataset.gtoModule==='Maestro de Gestión'||script.dataset.gtoModule==='Bitácora Técnica'){
+      if(script.dataset.gtoBellOnly!==undefined){target.replaceWith(host);}else if(script.dataset.gtoModule==='Maestro de Gestión'||script.dataset.gtoModule==='Bitácora Técnica'||script.dataset.gtoModule==='RR. HH. y Personal'){
         target.classList.add('gto-integrated-header');
         host.className='gto-integrated-host';
         target.append(host);
       }else target.after(host);
       const client=global.DirectorioGTO_opts?.sb;
-      api=mountView(host,{module:script.dataset.gtoModule,bellOnly:script.dataset.gtoBellOnly!==undefined,activityNote:script.dataset.gtoActivityNote,source:script.dataset.gtoActivity==='ot'&&client?otSource(client):null});
+      api=mountView(host,{module:script.dataset.gtoModule,bellOnly:script.dataset.gtoBellOnly!==undefined,activityNote:script.dataset.gtoActivityNote,home:script.dataset.gtoModule==='RR. HH. y Personal'?target.querySelector(':scope > a.brand')?.getAttribute('href'):undefined,source:script.dataset.gtoActivity==='ot'&&client?otSource(client):null});
       // Bell replacement target is intentionally gone: observe its containing toolbar instead.
       if(script.dataset.gtoBellOnly!==undefined)owner=host;
     }
