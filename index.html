@@ -8,65 +8,115 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-:root{--verde:#0A8A43;--verde2:#16A653;--texto:#1A2420;--gris:#3C4540}
+:root{--verde:#0A8A43;--verde2:#16A653;--osc:#06612E;--texto:#1A2420;--gris:#3C4540;--suave:#6B766F}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:#F6F7F7;color:var(--texto)}
 body{font-family:Nunito,"Segoe UI",Arial,sans-serif}
 a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
-/* ===== Lienzo (escritorio): diseño original de fondo ===== */
+/* ===== Lienzo (escritorio): diseño de fondo ===== */
 .marco{display:flex;justify-content:center;align-items:center;min-height:100vh;background:#F6F7F7}
 .lienzo{position:relative;width:min(100vw,calc(100vh*1672/941));aspect-ratio:1672/941;background:url("assets/fondo-menu-v3.jpg") center/100% 100% no-repeat;container-type:inline-size}
 
+/* Tarjetas */
 .lienzo .card{position:absolute;height:calc(196/941*100%)}
 .card{display:block;background:#fff;border-radius:1.15cqw;box-shadow:0 .3cqw 1.1cqw rgba(30,50,40,.12),0 0 0 .06cqw rgba(30,50,40,.07);overflow:hidden;transition:transform .15s,box-shadow .15s}
 .card:hover{transform:translateY(-.3cqw);box-shadow:0 .7cqw 1.8cqw rgba(10,138,67,.22),0 0 0 .1cqw rgba(10,138,67,.4)}
 .card:focus-visible{outline:.2cqw solid var(--verde);outline-offset:.25cqw}
 .card img{position:absolute;left:3.4%;top:9%;width:20.5%;height:auto}
-.card h3{position:absolute;left:28.5%;right:4%;top:14%;font-weight:900;font-size:1.62cqw;line-height:1.17}
+.card h3{position:absolute;left:28.5%;right:4%;top:17%;font-weight:900;font-size:1.62cqw;line-height:1.17}
 .card p{position:absolute;left:4.6%;right:19%;top:62%;font-weight:600;font-size:1.1cqw;line-height:1.35;color:var(--gris)}
-.card .ir{position:absolute;right:0;bottom:0;width:14.5%;height:23%;background:linear-gradient(135deg,var(--verde2),#06612E);clip-path:polygon(30% 0,100% 0,100% 100%,0 100%);display:flex;align-items:center;justify-content:flex-end;padding-right:1.05cqw}
+.card .ir{position:absolute;right:0;bottom:0;width:14.5%;height:23%;background:linear-gradient(135deg,var(--verde2),var(--osc));clip-path:polygon(30% 0,100% 0,100% 100%,0 100%);display:flex;align-items:center;justify-content:flex-end;padding-right:1.05cqw}
 .card .ir svg{width:1.4cqw;height:1.4cqw;color:#fff;display:block}
+.est{position:absolute;right:3.2%;top:7%;display:flex;align-items:center;gap:.35cqw;font-size:.72cqw;font-weight:800;color:var(--suave);letter-spacing:.02cqw}
+.est i{width:.62cqw;height:.62cqw;border-radius:50%;background:#B8C2BC;box-shadow:0 0 0 .18cqw rgba(184,194,188,.25)}
+.est.ok{color:var(--verde)} .est.ok i{background:#19B35A;box-shadow:0 0 0 .18cqw rgba(25,179,90,.2)}
+.est.mal{color:#B4232A} .est.mal i{background:#D93A3A;box-shadow:0 0 0 .18cqw rgba(217,58,58,.18)}
 
 .lienzo .c1{left:calc(624/1672*100%);width:calc(478/1672*100%)}
 .lienzo .c2{left:calc(1128/1672*100%);width:calc(495/1672*100%)}
 .lienzo .r1{top:calc(156/941*100%)} .lienzo .r2{top:calc(384/941*100%)} .lienzo .r3{top:calc(611/941*100%)}
 
-/* Reloj (reemplaza "Usuario GTO") */
-.reloj{position:absolute;right:calc(28/1672*100%);top:calc(20/941*100%);display:flex;align-items:center;gap:1cqw;background:rgba(255,255,255,.75);backdrop-filter:blur(4px);border:.06cqw solid #E1E8E4;border-radius:3cqw;padding:.55cqw 1.4cqw .55cqw .6cqw;box-shadow:0 .2cqw .8cqw rgba(30,50,40,.08)}
-.reloj .ico{width:3.1cqw;height:3.1cqw;border-radius:50%;background:linear-gradient(135deg,var(--verde2),#06612E);display:grid;place-items:center;color:#fff;flex:none}
-.reloj .ico svg{width:1.7cqw;height:1.7cqw}
-.reloj .hora{font-weight:900;font-size:2.05cqw;line-height:1;letter-spacing:.05cqw;font-variant-numeric:tabular-nums}
-.reloj .hora small{font-size:1.05cqw;color:var(--verde);font-weight:800;margin-left:.25cqw}
-.reloj .fecha{font-weight:700;font-size:.92cqw;color:var(--gris);margin-top:.2cqw}
-.reloj .sal{font-weight:800;font-size:.85cqw;color:var(--verde);border-left:.12cqw solid #DCE5E0;padding-left:1cqw;line-height:1.3}
+/* Barra superior: clima, tipo de cambio, reloj y botones */
+.barra{position:absolute;right:calc(28/1672*100%);top:calc(22/941*100%);display:flex;align-items:center;gap:.55cqw}
+.chip{display:flex;align-items:center;gap:.6cqw;background:rgba(255,255,255,.82);backdrop-filter:blur(4px);border:.06cqw solid #E1E8E4;border-radius:3cqw;padding:.4cqw .9cqw .4cqw .45cqw;box-shadow:0 .2cqw .8cqw rgba(30,50,40,.08);height:4cqw}
+.chip .ico{width:2.75cqw;height:2.75cqw;border-radius:50%;background:linear-gradient(135deg,var(--verde2),var(--osc));display:grid;place-items:center;color:#fff;flex:none}
+.chip .ico svg{width:1.5cqw;height:1.5cqw}
+.chip .v{font-weight:900;font-size:1.22cqw;line-height:1.05;font-variant-numeric:tabular-nums;white-space:nowrap}
+.chip .l{font-weight:700;font-size:.7cqw;color:var(--suave);white-space:nowrap;margin-top:.1cqw}
+.chip .v small{font-size:.8cqw;color:var(--verde);font-weight:800;margin-left:.2cqw}
+.reloj .v{font-size:1.75cqw}
+.reloj .sal{font-weight:800;font-size:.8cqw;color:var(--verde);border-left:.12cqw solid #DCE5E0;padding-left:.8cqw;line-height:1.25;margin-left:.2cqw}
+.btn{position:relative;width:3.7cqw;height:3.7cqw;border-radius:50%;background:rgba(255,255,255,.82);border:.06cqw solid #E1E8E4;box-shadow:0 .2cqw .8cqw rgba(30,50,40,.08);display:grid;place-items:center;color:var(--verde);transition:.15s}
+.btn:hover{background:#fff;color:var(--osc);transform:translateY(-.1cqw)}
+.btn svg{width:1.75cqw;height:1.75cqw}
+.btn .badge{position:absolute;top:.25cqw;right:.25cqw;min-width:1.2cqw;height:1.2cqw;padding:0 .3cqw;border-radius:1cqw;background:#D93A3A;color:#fff;font-size:.72cqw;font-weight:900;display:grid;place-items:center}
+.btn .badge:empty{display:none}
 
-/* ===== Celular ===== */
+/* Paneles flotantes (avisos y soporte) */
+.velo{position:fixed;inset:0;background:rgba(10,20,15,.35);display:none;z-index:50}
+.velo.on{display:block}
+.panel{position:fixed;z-index:60;background:#fff;border-radius:18px;box-shadow:0 20px 50px rgba(10,30,20,.25);width:min(420px,calc(100vw - 32px));display:none;overflow:hidden}
+.panel.on{display:block}
+.panel header{display:flex;align-items:center;gap:12px;padding:18px 20px;background:linear-gradient(135deg,var(--verde2),var(--osc));color:#fff}
+.panel header h4{font-size:18px;font-weight:900;flex:1}
+.panel header button{color:#fff;font-size:24px;line-height:1;width:32px;height:32px;border-radius:50%}
+.panel header button:hover{background:rgba(255,255,255,.15)}
+.avisos{max-height:60vh;overflow:auto;padding:8px 0}
+.aviso{padding:14px 20px;border-bottom:1px solid #EEF2EF}
+.aviso:last-child{border-bottom:0}
+.aviso .f{font-size:12px;font-weight:800;color:var(--verde);text-transform:uppercase;letter-spacing:.5px}
+.aviso b{display:block;font-size:16px;font-weight:900;margin:2px 0 4px}
+.aviso p{font-size:14px;color:var(--gris);line-height:1.45;font-weight:600}
+.aviso.nuevo b::after{content:"NUEVO";margin-left:8px;font-size:10px;background:#D93A3A;color:#fff;padding:2px 6px;border-radius:8px;vertical-align:middle}
+.vacio{padding:24px 20px;color:var(--suave);font-weight:700;text-align:center}
+.sop{padding:20px;display:grid;gap:12px}
+.sop p{color:var(--gris);font-weight:600;font-size:14px;line-height:1.45}
+.sop a{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:14px;border:1px solid #E1E8E4;font-weight:800;transition:.15s}
+.sop a:hover{border-color:var(--verde);background:#F2FAF5}
+.sop a span{display:block;font-size:13px;color:var(--suave);font-weight:600}
+.sop a .i{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:#fff;flex:none}
+.sop a .i svg{width:22px;height:22px}
+
+/* ===== Celular / pantalla vertical ===== */
 .movil{display:none}
 @media (max-width:760px), (max-aspect-ratio:1/1){
   .marco{display:none}
   .movil{display:block;background:#F6F7F7}
-  .movil .top{position:relative}
   .movil .top img{display:block;width:100%;height:auto}
-  .movil .reloj{position:static;margin:14px 16px 0;padding:8px 16px 8px 8px;border-radius:40px;gap:12px}
-  .movil .reloj .ico{width:44px;height:44px}.movil .reloj .ico svg{width:22px;height:22px}
-  .movil .reloj .hora{font-size:26px}.movil .reloj .hora small{font-size:14px}
-  .movil .reloj .fecha{font-size:13px}.movil .reloj .sal{font-size:12px;padding-left:12px;border-left-width:2px}
+  .movil .barra{position:static;flex-wrap:wrap;gap:10px;padding:14px 16px 0}
+  .movil .chip{height:auto;padding:6px 14px 6px 6px;border-radius:30px;gap:10px;flex:1 1 auto}
+  .movil .chip .ico{width:40px;height:40px}.movil .chip .ico svg{width:20px;height:20px}
+  .movil .chip .v{font-size:18px}.movil .chip .l{font-size:12px}.movil .chip .v small{font-size:12px}
+  .movil .reloj{flex-basis:100%}.movil .reloj .v{font-size:26px}.movil .reloj .sal{font-size:12px;padding-left:12px;border-left-width:2px;margin-left:auto}
+  .movil .btn{width:46px;height:46px}.movil .btn svg{width:22px;height:22px}
+  .movil .btn .badge{top:0;right:0;min-width:18px;height:18px;font-size:11px;border-radius:9px;padding:0 5px}
   .movil .lista{display:grid;gap:14px;padding:16px 16px 22px}
-  .movil .card{position:relative;height:140px;border-radius:16px;box-shadow:0 4px 14px rgba(30,50,40,.12)}
-  .movil .card img{left:12px;top:12px;width:66px}
-  .movil .card h3{left:92px;top:16px;right:12px;font-size:19px}
+  .movil .card{position:relative;height:146px;border-radius:16px;box-shadow:0 4px 14px rgba(30,50,40,.12)}
+  .movil .card img{left:12px;top:14px;width:66px}
+  .movil .card h3{left:92px;top:26px;right:12px;font-size:19px}
   .movil .card p{left:92px;top:auto;bottom:12px;right:64px;font-size:13px}
   .movil .card .ir{width:58px;height:38px;padding-right:13px}.movil .card .ir svg{width:18px;height:18px}
+  .movil .est{top:8px;right:12px;font-size:11px;gap:5px}.movil .est i{width:8px;height:8px;box-shadow:none}
   .movil .pie{display:block;width:100%;height:auto}
 }
 </style>
 </head>
 <body>
 <div class="marco"><div class="lienzo" id="lienzo" aria-label="Sistema Integrado GTO PERÚ — selecciona un sistema para ingresar"></div></div>
-<div class="movil"><div class="top"><img src="assets/cabecera-movil-v3.jpg" alt="Sistema Integrado GTO PERÚ — Minería, industria y ferrovías"></div><div id="relojMovil"></div><div class="lista" id="lista"></div><img class="pie" src="assets/pie-movil-v3.jpg" alt=""></div>
+<div class="movil"><div class="top"><img src="assets/cabecera-movil-v3.jpg" alt="Sistema Integrado GTO PERÚ — Minería, industria y ferrovías"></div><div id="barraMovil"></div><div class="lista" id="lista"></div><img class="pie" src="assets/pie-movil-v3.jpg" alt=""></div>
+
+<div class="velo" id="velo"></div>
+<div class="panel" id="pAvisos" role="dialog" aria-label="Avisos internos"><header><h4>Avisos internos</h4><button data-cerrar aria-label="Cerrar">×</button></header><div class="avisos" id="listaAvisos"></div></div>
+<div class="panel" id="pSoporte" role="dialog" aria-label="Soporte de sistemas"><header><h4>Soporte de sistemas</h4><button data-cerrar aria-label="Cerrar">×</button></header><div class="sop" id="sop"></div></div>
+
 <script>
-/* Editar aquí los sistemas (nombre, descripción, icono y dirección) */
+/* =====================================================================
+   CONFIGURACIÓN — todo lo que se edita está aquí
+   ===================================================================== */
+
+/* 1) Sistemas (nombre, descripción, icono y dirección) */
 const SISTEMAS = [
   { nombre:'Sistema de<br>Cotizaciones', desc:'Emite cotizaciones con numeración automática y PDF con formato GTO.', icono:'assets/icono-cot.png', url:'https://cotizador-gto-web.vercel.app' },
   { nombre:'Maestro de Gestión<br>de Operaciones', desc:'Controla OT y proyectos internos: guías, informes, facturación y cobro.', icono:'assets/icono-maestro.png', url:'https://maestro-gestion-operaciones.vercel.app' },
@@ -75,33 +125,149 @@ const SISTEMAS = [
   { nombre:'RRHH y<br>Personal', desc:'Gestiona el personal, fichas, tareo, planillas y boletas.', icono:'assets/icono-rrhh.png', url:'https://gto-rrhh.vercel.app' },
   { nombre:'GTO<br>Finanzas', desc:'Administra el presupuesto, ingresos, egresos y factoring.', icono:'assets/icono-finanzas.png', url:'https://gto-finanzas.vercel.app' },
 ];
-const flecha='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
-const reloj='<div class="reloj" role="timer" aria-live="off"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><div class="hora"><span data-h>--:--</span><small data-s></small></div><div class="fecha" data-f></div></div><div class="sal" data-g></div></div>';
-const tarjeta=(s,i)=>`<a class="card c${i%2+1} r${Math.floor(i/2)+1}" href="${s.url}" target="_blank" rel="noopener" aria-label="${s.nombre.replace('<br>',' ')}">
-  <img src="${s.icono}" alt=""><h3>${s.nombre}</h3><p>${s.desc}</p><span class="ir">${flecha}</span></a>`;
-document.getElementById('lienzo').innerHTML=reloj+SISTEMAS.map(tarjeta).join('');
-document.getElementById('lista').innerHTML=SISTEMAS.map(tarjeta).join('');
-document.getElementById('relojMovil').innerHTML=reloj;
 
-/* Hora de Perú (America/Lima), aunque el equipo tenga otra zona horaria */
+/* 2) Avisos internos (campana). El más reciente primero.
+      Para agregar uno, copiar una línea y cambiar id (único), fecha, título y texto. */
+const AVISOS = [
+  { id:'2026-11-17-menu', fecha:'17/11/2026', titulo:'Nuevo menú del Sistema Integrado', texto:'Desde aquí se ingresa a todos los sistemas de GTO. Guárdalo en favoritos.' },
+];
+
+/* 3) Soporte de sistemas */
+const SOPORTE = {
+  whatsapp:'51921502895',                 // número con código de país, sin + ni espacios
+  correo:'agomez@gtoperu.com',
+  nombre:'Soporte de sistemas GTO',
+};
+
+/* 4) Clima (Arequipa) */
+const CLIMA = { lat:-16.41, lon:-71.54, lugar:'Arequipa' };
+
+/* ===================================================================== */
 const TZ='America/Lima';
+const svg=(d,w=2.2)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const I={
+  flecha:svg('<path d="M9 5l7 7-7 7"/>',3.2),
+  reloj:svg('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
+  sol:svg('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),
+  nube:svg('<path d="M7 18h10a4 4 0 0 0 .6-7.96A6 6 0 0 0 6.1 9.2 4.5 4.5 0 0 0 7 18z"/>'),
+  solnube:svg('<path d="M8 3v1.5M3.5 8H5M4.8 4.8l1 1M12.2 4.8l-1 1"/><path d="M5.5 10.5a3 3 0 0 1 5.6-1.6"/><path d="M8.5 20h9a3.5 3.5 0 0 0 .5-6.96A5 5 0 0 0 8.3 12a3.9 3.9 0 0 0 .2 8z"/>'),
+  lluvia:svg('<path d="M7 15h10a4 4 0 0 0 .6-7.96A6 6 0 0 0 6.1 6.2 4.5 4.5 0 0 0 7 15z"/><path d="M8 18l-1 3M12 18l-1 3M16 18l-1 3"/>'),
+  tormenta:svg('<path d="M7 15h10a4 4 0 0 0 .6-7.96A6 6 0 0 0 6.1 6.2 4.5 4.5 0 0 0 7 15z"/><path d="M12 15l-2 4h3l-2 4"/>'),
+  niebla:svg('<path d="M4 9h16M3 13h18M5 17h14"/>'),
+  dolar:svg('<path d="M12 2v20"/><path d="M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>'),
+  campana:svg('<path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>'),
+  soporte:svg('<path d="M3 14v-3a9 9 0 0 1 18 0v3"/><path d="M21 15a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2 2z"/><path d="M3 15a2 2 0 0 0 2 2h1v-6H5a2 2 0 0 0-2 2z"/><path d="M18 17v1a3 3 0 0 1-3 3h-3"/>'),
+  completa:svg('<path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/>'),
+  salir:svg('<path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/>'),
+  wa:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg>',
+  mail:svg('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>'),
+};
+
+/* --- Construcción --- */
+const barra=`<div class="barra">
+  <div class="chip" title="Clima en ${CLIMA.lugar}"><span class="ico" data-cico>${I.solnube}</span><div><div class="v" data-ct>-- °C</div><div class="l" data-cl>${CLIMA.lugar}</div></div></div>
+  <div class="chip" title="Tipo de cambio del dólar"><span class="ico">${I.dolar}</span><div><div class="v" data-tc>S/ --</div><div class="l" data-tcl>Tipo de cambio</div></div></div>
+  <div class="chip reloj" role="timer"><span class="ico">${I.reloj}</span><div><div class="v"><span data-h>--:--</span><small data-s></small></div><div class="l" data-f></div></div><div class="sal" data-g></div></div>
+  <button class="btn" data-abrir="pAvisos" title="Avisos internos" aria-label="Avisos internos">${I.campana}<span class="badge" data-badge></span></button>
+  <button class="btn" data-abrir="pSoporte" title="Soporte de sistemas" aria-label="Soporte de sistemas">${I.soporte}</button>
+  <button class="btn" data-full title="Pantalla completa" aria-label="Pantalla completa">${I.completa}</button>
+</div>`;
+const tarjeta=(s,i)=>`<a class="card c${i%2+1} r${Math.floor(i/2)+1}" href="${s.url}" target="_blank" rel="noopener" aria-label="${s.nombre.replace('<br>',' ')}">
+  <img src="${s.icono}" alt=""><span class="est" data-est="${i}"><i></i><b>Verificando…</b></span><h3>${s.nombre}</h3><p>${s.desc}</p><span class="ir">${I.flecha}</span></a>`;
+document.getElementById('lienzo').innerHTML=barra+SISTEMAS.map(tarjeta).join('');
+document.getElementById('lista').innerHTML=SISTEMAS.map(tarjeta).join('');
+document.getElementById('barraMovil').innerHTML=barra;
+const $$=q=>document.querySelectorAll(q);
+const set=(q,html)=>$$(q).forEach(e=>e.innerHTML=html);
+
+/* --- Reloj (hora de Perú) --- */
 const fH=new Intl.DateTimeFormat('es-PE',{timeZone:TZ,hour:'2-digit',minute:'2-digit',hour12:true});
 const fS=new Intl.DateTimeFormat('es-PE',{timeZone:TZ,second:'2-digit'});
 const fF=new Intl.DateTimeFormat('es-PE',{timeZone:TZ,weekday:'long',day:'numeric',month:'long',year:'numeric'});
 const fHH=new Intl.DateTimeFormat('es-PE',{timeZone:TZ,hour:'numeric',hour12:false});
 function tic(){
-  const d=new Date();
-  const partes=fH.formatToParts(d); const v=t=>(partes.find(p=>p.type===t)||{}).value||'';
-  const hm=v('hour')+':'+v('minute');
-  const ap=(partes.find(p=>p.type==='dayPeriod')||{}).value||'';
-  const h=+fHH.format(d); const saludo=h<12?'Buenos<br>días':h<19?'Buenas<br>tardes':'Buenas<br>noches';
-  const fecha=fF.format(d).replace(/^./,c=>c.toUpperCase());
-  document.querySelectorAll('[data-h]').forEach(e=>e.textContent=hm);
-  document.querySelectorAll('[data-s]').forEach(e=>e.textContent=fS.format(d).padStart(2,'0')+' '+ap.replace(/\./g,'').replace(/\s/g,'').toUpperCase());
-  document.querySelectorAll('[data-f]').forEach(e=>e.textContent=fecha);
-  document.querySelectorAll('[data-g]').forEach(e=>e.innerHTML=saludo);
+  const d=new Date(), p=fH.formatToParts(d), v=t=>(p.find(x=>x.type===t)||{}).value||'';
+  const ap=v('dayPeriod').replace(/[.\s]/g,'').toUpperCase();
+  const h=+fHH.format(d);
+  set('[data-h]',v('hour')+':'+v('minute'));
+  set('[data-s]',fS.format(d).padStart(2,'0')+' '+ap);
+  set('[data-f]',fF.format(d).replace(/^./,c=>c.toUpperCase()));
+  set('[data-g]',h<12?'Buenos<br>días':h<19?'Buenas<br>tardes':'Buenas<br>noches');
 }
 tic(); setInterval(tic,1000);
+
+/* --- Clima (Open-Meteo, sin clave) --- */
+function iconoClima(c){ if(c===0)return[I.sol,'Despejado']; if(c<=2)return[I.solnube,'Parcial nublado']; if(c===3)return[I.nube,'Nublado'];
+  if(c<=48)return[I.niebla,'Neblina']; if(c<=67||(c>=80&&c<=82))return[I.lluvia,'Lluvia']; if(c<=77)return[I.nube,'Nieve']; return[I.tormenta,'Tormenta']; }
+async function clima(){
+  try{
+    const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${CLIMA.lat}&longitude=${CLIMA.lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=${encodeURIComponent(TZ)}&forecast_days=1`);
+    const j=await r.json(); const [ic,txt]=iconoClima(j.current.weather_code);
+    set('[data-cico]',ic); set('[data-ct]',Math.round(j.current.temperature_2m)+' °C');
+    set('[data-cl]',`${CLIMA.lugar} · ${txt} · ${Math.round(j.daily.temperature_2m_min[0])}°/${Math.round(j.daily.temperature_2m_max[0])}°`);
+  }catch(e){ set('[data-cl]',CLIMA.lugar+' · sin datos'); }
+}
+clima(); setInterval(clima,30*60*1000);
+
+/* --- Tipo de cambio (SUNAT; si no responde, referencial de mercado) --- */
+const n3=x=>Number(x).toFixed(3);
+async function tipoCambio(){
+  try{
+    const r=await fetch('https://api.apis.net.pe/v1/tipo-cambio-sunat'); if(!r.ok) throw 0;
+    const j=await r.json(); if(!j.venta) throw 0;
+    set('[data-tc]',`S/ ${n3(j.venta)}<small>V</small>`); set('[data-tcl]',`SUNAT · compra ${n3(j.compra)}`); return;
+  }catch(e){}
+  try{
+    const r=await fetch('https://open.er-api.com/v6/latest/USD'); const j=await r.json();
+    set('[data-tc]',`S/ ${n3(j.rates.PEN)}`); set('[data-tcl]','Dólar · referencial');
+  }catch(e){ set('[data-tcl]','Tipo de cambio · sin datos'); }
+}
+tipoCambio(); setInterval(tipoCambio,60*60*1000);
+
+/* --- Estado de cada sistema --- */
+async function estado(){
+  SISTEMAS.forEach(async(s,i)=>{
+    const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),9000); let ok=false;
+    try{ await fetch(s.url,{mode:'no-cors',cache:'no-store',signal:ctl.signal}); ok=true; }catch(e){}
+    clearTimeout(t);
+    $$(`[data-est="${i}"]`).forEach(e=>{ e.className='est '+(ok?'ok':'mal'); e.querySelector('b').textContent=ok?'En línea':'Sin conexión'; });
+  });
+}
+estado(); setInterval(estado,5*60*1000);
+
+/* --- Avisos --- */
+const LS='gto_avisos_vistos';
+const leer=()=>{try{return JSON.parse(localStorage.getItem(LS)||'[]')}catch(e){return[]}};
+function pintarAvisos(){
+  const vistos=leer(); const nuevos=AVISOS.filter(a=>!vistos.includes(a.id)).length;
+  set('[data-badge]',nuevos||'');
+  document.getElementById('listaAvisos').innerHTML=AVISOS.length?AVISOS.map(a=>`<div class="aviso${vistos.includes(a.id)?'':' nuevo'}"><span class="f">${a.fecha}</span><b>${a.titulo}</b><p>${a.texto}</p></div>`).join(''):'<div class="vacio">No hay avisos por ahora.</div>';
+}
+pintarAvisos();
+
+/* --- Soporte --- */
+document.getElementById('sop').innerHTML=`<p>¿Algún sistema no carga o tienes una consulta? Escríbenos e indica el sistema y lo que ocurre.</p>
+  <a href="https://wa.me/${SOPORTE.whatsapp}?text=${encodeURIComponent('Hola, necesito soporte con el Sistema Integrado GTO: ')}" target="_blank" rel="noopener"><span class="i" style="background:#25D366">${I.wa}</span><div>WhatsApp<span>+${SOPORTE.whatsapp.replace(/^(\d{2})(\d{3})(\d{3})(\d{3})$/,'$1 $2 $3 $4')}</span></div></a>
+  <a href="mailto:${SOPORTE.correo}?subject=${encodeURIComponent('Soporte Sistema Integrado GTO')}"><span class="i" style="background:#0A8A43">${I.mail}</span><div>Correo<span>${SOPORTE.correo}</span></div></a>`;
+
+/* --- Abrir / cerrar paneles --- */
+const velo=document.getElementById('velo');
+function cerrar(){ $$('.panel.on').forEach(p=>p.classList.remove('on')); velo.classList.remove('on'); }
+function abrir(id,btn){
+  cerrar(); const p=document.getElementById(id); p.classList.add('on'); velo.classList.add('on');
+  const r=btn.getBoundingClientRect(); const w=p.offsetWidth;
+  p.style.top=Math.min(r.bottom+10,window.innerHeight-p.offsetHeight-16)+'px';
+  p.style.left=Math.max(16,Math.min(r.right-w,window.innerWidth-w-16))+'px';
+  if(id==='pAvisos'){ try{localStorage.setItem(LS,JSON.stringify(AVISOS.map(a=>a.id)))}catch(e){} setTimeout(pintarAvisos,1500); set('[data-badge]',''); }
+}
+document.addEventListener('click',e=>{
+  const a=e.target.closest('[data-abrir]'); if(a){ abrir(a.dataset.abrir,a); return; }
+  if(e.target.closest('[data-cerrar]')||e.target===velo) cerrar();
+  const f=e.target.closest('[data-full]'); if(f){ document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen().catch(()=>{}); }
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') cerrar(); });
+document.addEventListener('fullscreenchange',()=>{ const on=!!document.fullscreenElement;
+  $$('[data-full]').forEach(b=>{ b.innerHTML=on?I.salir:I.completa; b.title=on?'Salir de pantalla completa':'Pantalla completa'; }); });
 </script>
 </body>
 </html>
