@@ -48,7 +48,8 @@ body:has(.gto-login) #app { max-width:none; margin:0; padding:0; }
  .gto .gto-logo-placa { padding:0; }
  .gto .gto-logo-placa img { width:230px; max-width:80%; }
  .gto .gto-sector-title { margin:16px 0 0; border:0; padding:0; text-align:center; font-size:20px; line-height:1.2; }
- .gto .gto-sector-title br { display:none; }
+ .gto .gto-sector-title br { display:block; }
+ .gto .gto-sector-panel::before { display:none; }
  .gto .gto-sectores { display:none; }
  .gto .gto-login > .form { padding:24px 16px 32px; gap:20px; justify-content:flex-start; }
  .gto .gto-login .caja { padding:24px; gap:18px; width:min(470px,100%); }
