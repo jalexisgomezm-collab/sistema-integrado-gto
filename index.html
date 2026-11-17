@@ -69,6 +69,12 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .aviso .f{font-size:12px;font-weight:800;color:var(--verde);text-transform:uppercase;letter-spacing:.5px}
 .aviso b{display:block;font-size:16px;font-weight:900;margin:2px 0 4px}
 .aviso p{font-size:14px;color:var(--gris);line-height:1.45;font-weight:600}
+.grupo{padding:12px 20px 4px;font-size:11px;font-weight:900;letter-spacing:1.2px;color:var(--suave);text-transform:uppercase}
+.aviso{display:flex;gap:14px;align-items:flex-start}
+.aviso .ti{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none;color:#fff}
+.aviso .ti svg{width:21px;height:21px}
+.t-basura{background:#7A5A2B}.t-seguridad{background:#D98A0A}.t-visita{background:#1C6FD1}.t-recojo{background:#0A8A43}
+.aviso.hoy{background:#FFF8EC}
 .aviso.nuevo b::after{content:"NUEVO";margin-left:8px;font-size:10px;background:#D93A3A;color:#fff;padding:2px 6px;border-radius:8px;vertical-align:middle}
 .vacio{padding:24px 20px;color:var(--suave);font-weight:700;text-align:center}
 .sop{padding:20px;display:grid;gap:12px}
@@ -108,9 +114,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 <div class="movil"><div class="top"><img src="assets/cabecera-movil-v3.jpg" alt="Sistema Integrado GTO PERÚ — Minería, industria y ferrovías"></div><div id="barraMovil"></div><div class="lista" id="lista"></div><img class="pie" src="assets/pie-movil-v3.jpg" alt=""></div>
 
 <div class="velo" id="velo"></div>
-<div class="panel" id="pAvisos" role="dialog" aria-label="Avisos internos"><header><h4>Avisos internos</h4><button data-cerrar aria-label="Cerrar">×</button></header><div class="avisos" id="listaAvisos"></div></div>
+<div class="panel" id="pAvisos" role="dialog" aria-label="Recordatorios"><header><h4>Recordatorios</h4><button data-cerrar aria-label="Cerrar">×</button></header><div class="avisos" id="listaAvisos"></div></div>
 <div class="panel" id="pSoporte" role="dialog" aria-label="Soporte de sistemas"><header><h4>Soporte de sistemas</h4><button data-cerrar aria-label="Cerrar">×</button></header><div class="sop" id="sop"></div></div>
 
+<script src="recordatorios.js?v=1"></script>
 <script>
 /* =====================================================================
    CONFIGURACIÓN — todo lo que se edita está aquí
@@ -126,16 +133,12 @@ const SISTEMAS = [
   { nombre:'GTO<br>Finanzas', desc:'Administra el presupuesto, ingresos, egresos y factoring.', icono:'assets/icono-finanzas.png', url:'https://gto-finanzas.vercel.app' },
 ];
 
-/* 2) Avisos internos (campana). El más reciente primero.
-      Para agregar uno, copiar una línea y cambiar id (único), fecha, título y texto. */
-const AVISOS = [
-  { id:'2026-11-17-menu', fecha:'17/11/2026', titulo:'Nuevo menú del Sistema Integrado', texto:'Desde aquí se ingresa a todos los sistemas de GTO. Guárdalo en favoritos.' },
-];
+/* 2) Recordatorios de la campana: se editan en el archivo recordatorios.js */
 
 /* 3) Soporte de sistemas */
 const SOPORTE = {
   whatsapp:'51921502895',                 // número con código de país, sin + ni espacios
-  correo:'agomez@gtoperu.com',
+  correo:'jalexisgomezm@gmail.com',
   nombre:'Soporte de sistemas GTO',
 };
 
@@ -160,6 +163,10 @@ const I={
   completa:svg('<path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/>'),
   salir:svg('<path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/>'),
   wa:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg>',
+  basura:svg('<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14"/><path d="M10 11v6M14 11v6"/>'),
+  seguridad:svg('<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="m9 12 2 2 4-4"/>'),
+  visita:svg('<circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 4.5a3 3 0 0 1 0 6M21 20a5 5 0 0 0-4-4.9"/>'),
+  recojo:svg('<path d="M1 6h13v10H1z"/><path d="M14 9h4l3 3v4h-7"/><circle cx="5.5" cy="17.5" r="2"/><circle cx="17.5" cy="17.5" r="2"/>'),
   mail:svg('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>'),
 };
 
@@ -168,7 +175,7 @@ const barra=`<div class="barra">
   <div class="chip" title="Clima en ${CLIMA.lugar}"><span class="ico" data-cico>${I.solnube}</span><div><div class="v" data-ct>-- °C</div><div class="l" data-cl>${CLIMA.lugar}</div></div></div>
   <div class="chip" title="Tipo de cambio del dólar"><span class="ico">${I.dolar}</span><div><div class="v" data-tc>S/ --</div><div class="l" data-tcl>Tipo de cambio</div></div></div>
   <div class="chip reloj" role="timer"><span class="ico">${I.reloj}</span><div><div class="v"><span data-h>--:--</span><small data-s></small></div><div class="l" data-f></div></div><div class="sal" data-g></div></div>
-  <button class="btn" data-abrir="pAvisos" title="Avisos internos" aria-label="Avisos internos">${I.campana}<span class="badge" data-badge></span></button>
+  <button class="btn" data-abrir="pAvisos" title="Recordatorios" aria-label="Recordatorios">${I.campana}<span class="badge" data-badge></span></button>
   <button class="btn" data-abrir="pSoporte" title="Soporte de sistemas" aria-label="Soporte de sistemas">${I.soporte}</button>
   <button class="btn" data-full title="Pantalla completa" aria-label="Pantalla completa">${I.completa}</button>
 </div>`;
@@ -235,15 +242,45 @@ async function estado(){
 }
 estado(); setInterval(estado,5*60*1000);
 
-/* --- Avisos --- */
-const LS='gto_avisos_vistos';
+/* --- Recordatorios (campana) --- */
+const EV=window.EVENTOS||[], FX=window.FIJOS||[], SG=window.SEGURIDAD||[];
+const fISO=new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'});
+const fHM=new Intl.DateTimeFormat('en-GB',{timeZone:TZ,hour:'2-digit',minute:'2-digit',hour12:false});
+const fDia=new Intl.DateTimeFormat('es-PE',{timeZone:'UTC',weekday:'long',day:'numeric',month:'long'});
+const fWd=new Intl.DateTimeFormat('en-US',{timeZone:TZ,weekday:'short'});
+const WD={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6};
+const addDias=(iso,n)=>{const d=new Date(iso+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)};
+const LS='gto_recordatorios_vistos';
 const leer=()=>{try{return JSON.parse(localStorage.getItem(LS)||'[]')}catch(e){return[]}};
-function pintarAvisos(){
-  const vistos=leer(); const nuevos=AVISOS.filter(a=>!vistos.includes(a.id)).length;
-  set('[data-badge]',nuevos||'');
-  document.getElementById('listaAvisos').innerHTML=AVISOS.length?AVISOS.map(a=>`<div class="aviso${vistos.includes(a.id)?'':' nuevo'}"><span class="f">${a.fecha}</span><b>${a.titulo}</b><p>${a.texto}</p></div>`).join(''):'<div class="vacio">No hay avisos por ahora.</div>';
+function recordatorios(){
+  const d=new Date(), hoy=fISO.format(d), manana=addDias(hoy,1), hm=fHM.format(d), wd=WD[fWd.format(d)];
+  const items=[];
+  // Eventos: hoy y mañana (activos); próximos 30 días (informativos)
+  EV.filter(e=>e&&e.fecha>=hoy).sort((a,b)=>(a.fecha+(a.hora||'')).localeCompare(b.fecha+(b.hora||''))).forEach(e=>{
+    const cuando=e.fecha===hoy?'Hoy':e.fecha===manana?'Mañana':fDia.format(new Date(e.fecha+'T12:00:00Z')).replace(/^./,c=>c.toUpperCase());
+    if(e.fecha<=addDias(hoy,30)) items.push({id:'ev-'+e.fecha+'-'+e.titulo,g:e.fecha<=manana?'hoy':'prox',tipo:e.tipo==='recojo'?'recojo':'visita',
+      f:`${cuando}${e.hora?' · '+e.hora+' h':''} · ${e.tipo==='recojo'?'Recojo':'Visita'}`,titulo:e.titulo,texto:e.texto||'',activo:e.fecha<=manana});
+  });
+  // Fijos semanales
+  FX.forEach((r,i)=>{
+    if(r.dias.includes(wd)&&hm>=(r.desde||'00:00')&&hm<=(r.hasta||'23:59'))
+      items.push({id:`fx-${i}-${hoy}`,g:'hoy',tipo:r.tipo||'seguridad',f:'Hoy',titulo:r.titulo,texto:r.texto,activo:true});
+    else if(r.previo&&r.dias.includes((wd+1)%7)&&hm>='15:00')
+      items.push({id:`fxp-${i}-${hoy}`,g:'hoy',tipo:r.tipo||'seguridad',f:'Mañana',titulo:r.tituloPrevio||r.titulo,texto:r.textoPrevio||r.texto,activo:true});
+  });
+  // Seguridad del día (rota)
+  if(SG.length){ const n=Math.floor(new Date(hoy+'T00:00:00Z')/864e5)%SG.length;
+    items.push({id:'sg-'+hoy,g:'seg',tipo:'seguridad',f:'Seguridad del día',titulo:'Recuerda',texto:SG[n],activo:true}); }
+  return items;
 }
-pintarAvisos();
+function pintarAvisos(){
+  const it=recordatorios(), vistos=leer();
+  set('[data-badge]',it.filter(x=>x.activo&&!vistos.includes(x.id)).length||'');
+  const bloque=(g,t)=>{const l=it.filter(x=>x.g===g); return l.length?`<div class="grupo">${t}</div>`+l.map(x=>`<div class="aviso${g==='hoy'?' hoy':''}${x.activo&&!vistos.includes(x.id)?' nuevo':''}"><span class="ti t-${x.tipo}">${I[x.tipo]||I.seguridad}</span><div><span class="f">${x.f}</span><b>${x.titulo}</b><p>${x.texto}</p></div></div>`).join(''):''};
+  const html=bloque('hoy','Hoy y mañana')+bloque('prox','Próximas visitas y recojos')+bloque('seg','Seguridad');
+  document.getElementById('listaAvisos').innerHTML=html||'<div class="vacio">No hay recordatorios por ahora.</div>';
+}
+pintarAvisos(); setInterval(pintarAvisos,60*1000);
 
 /* --- Soporte --- */
 document.getElementById('sop').innerHTML=`<p>¿Algún sistema no carga o tienes una consulta? Escríbenos e indica el sistema y lo que ocurre.</p>
@@ -258,7 +295,7 @@ function abrir(id,btn){
   const r=btn.getBoundingClientRect(); const w=p.offsetWidth;
   p.style.top=Math.min(r.bottom+10,window.innerHeight-p.offsetHeight-16)+'px';
   p.style.left=Math.max(16,Math.min(r.right-w,window.innerWidth-w-16))+'px';
-  if(id==='pAvisos'){ try{localStorage.setItem(LS,JSON.stringify(AVISOS.map(a=>a.id)))}catch(e){} setTimeout(pintarAvisos,1500); set('[data-badge]',''); }
+  if(id==='pAvisos'){ try{localStorage.setItem(LS,JSON.stringify(recordatorios().map(a=>a.id)))}catch(e){} setTimeout(pintarAvisos,1500); set('[data-badge]',''); }
 }
 document.addEventListener('click',e=>{
   const a=e.target.closest('[data-abrir]'); if(a){ abrir(a.dataset.abrir,a); return; }
