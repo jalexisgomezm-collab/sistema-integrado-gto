@@ -40,6 +40,8 @@
     const clock=el('div','gto-status-clock'), time=el('time'), label=el('small');clock.append(time,label);
     const note=el('span','gto-status-note','Hora de Perú · '+(options.module||'GTO'));
     const bell=el('button','','Avisos');bell.type='button';bell.setAttribute('aria-haspopup','dialog');
+    const icon=document.createElementNS('http://www.w3.org/2000/svg','svg');icon.setAttribute('viewBox','0 0 24 24');icon.setAttribute('fill','none');icon.setAttribute('stroke','currentColor');icon.setAttribute('stroke-width','2');icon.setAttribute('aria-hidden','true');
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d','M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a2 2 0 0 0 3.4 0');icon.append(path);bell.prepend(icon);
     const count=el('span','gto-status-count');bell.append(count);
     if(!options.bellOnly)root.append(clock,note);root.append(bell);host.append(root);
     const backdrop=el('div','gto-status-backdrop'), dialog=el('section','gto-status-dialog');
@@ -62,7 +64,7 @@
       general.forEach(x=>{const row=el('article','gto-status-item'+(!read.includes(x.id)?' unread':''));row.append(el('small','',x.label),el('strong','',x.title),el('p','',x.text));list.append(row);});
       if(general.some(x=>!read.includes(x.id))){const b=el('button','','Marcar avisos generales como leídos');b.type='button';b.onclick=()=>{try{localStorage.setItem(key,JSON.stringify([...new Set([...read,...general.map(x=>x.id)])].slice(-300)));redraw();}catch{status.textContent='El navegador no permitió guardar la lectura de los avisos.';}};list.append(b);}
       list.append(el('h3','','Actividad del sistema'));
-      if(!options.source){list.append(el('p','','Los avisos generales están disponibles. Las alertas de actividad de este módulo aún no están conectadas.'));return;}
+      if(!options.source){list.append(el('p','',options.activityNote||'Los avisos generales están disponibles. Las alertas de actividad de este módulo aún no están conectadas.'));return;}
       if(loading)list.append(el('p','','Consultando actividad…'));
       if(error){list.append(el('p','gto-status-error',error));const retry=el('button','','Reintentar');retry.type='button';retry.onclick=refresh;list.append(retry);}
       if(!loading&&!error&&!activity.length)list.append(el('p','','No hay OT recientes disponibles para tu usuario.'));
@@ -105,7 +107,7 @@
       owner=target;host=el('div');
       if(script.dataset.gtoBellOnly!==undefined){target.replaceWith(host);}else target.after(host);
       const client=global.DirectorioGTO_opts?.sb;
-      api=mount(host,{module:script.dataset.gtoModule,bellOnly:script.dataset.gtoBellOnly!==undefined,source:script.dataset.gtoActivity==='ot'&&client?otSource(client):null});
+      api=mount(host,{module:script.dataset.gtoModule,bellOnly:script.dataset.gtoBellOnly!==undefined,activityNote:script.dataset.gtoActivityNote,source:script.dataset.gtoActivity==='ot'&&client?otSource(client):null});
       // Bell replacement target is intentionally gone: observe its containing toolbar instead.
       if(script.dataset.gtoBellOnly!==undefined)owner=host;
     }
