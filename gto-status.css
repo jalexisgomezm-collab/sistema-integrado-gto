@@ -40,8 +40,9 @@ header.top.gto-integrated-header > :last-child{margin-inline:0}
 .app-shell:has(.gto-shared-toolbar[data-gto-module="Cotizaciones"]) .workspace-body .sidebar{top:0;height:100svh}
 body:has(.gto-shared-toolbar[data-gto-module="Logística y Compras"]) aside > div:first-child:has(> img[src="/logo-gto.png"]){display:none}
 body:has(.gto-shared-toolbar[data-gto-module="Logística y Compras"]) aside > nav{padding-top:18px}
-.dashboard:has(.gto-shared-toolbar[data-gto-module="Finanzas"]) .topbar{position:relative;top:auto}
-body:has(.gto-shared-toolbar[data-gto-module="Finanzas"]) aside button.brand:has(.sidebar-logo){display:none}
+.topbar:has(+ div > .gto-shared-toolbar[data-gto-module="Finanzas"]){position:relative;top:auto}
+body:has(.gto-shared-toolbar[data-gto-module="Finanzas"]) aside button.brand .sidebar-logo{display:none}
+body:has(.gto-shared-toolbar[data-gto-module="Finanzas"]) aside button.brand:has(.sidebar-logo)::after{content:"Ir al resumen";font-weight:700}
 header.top.gto-integrated-header:has([data-gto-module="RR. HH. y Personal"]) > :is(nav,.user,.menu-btn){color:inherit}
 header.top.gto-integrated-header:has([data-gto-module="RR. HH. y Personal"]) > .user{padding-inline:12px}
 .gto-shared-toolbar{padding-block:12px}
@@ -50,3 +51,5 @@ header.top.gto-integrated-header:has([data-gto-module="RR. HH. y Personal"]) > .
  .app-shell:has(.gto-shared-toolbar[data-gto-module="Cotizaciones"]) .workspace-body .sidebar{height:auto;top:auto}
  .gto-shared-toolbar .barra{justify-content:flex-start}
 }
+
+header.top.gto-integrated-header:has([data-gto-module="RR. HH. y Personal"]) > .nav.open{top:100%}
