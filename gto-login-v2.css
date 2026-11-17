@@ -1,0 +1,60 @@
+@import url('./gto-ui.css');
+/* GTO login v2. Scoped to login screens; internal application styles stay intact. */
+html:has(.gto-login), body:has(.gto-login) { margin:0; min-width:320px; background:#F6F7F7; }
+body:has(.gto-login) #app { max-width:none; margin:0; padding:0; }
+.gto .gto-login { display:grid; grid-template-columns:minmax(0,44fr) minmax(0,56fr); min-height:100vh; min-height:100svh; padding:0; margin:0; max-width:none; color-scheme:light; background:#F6F7F7; }
+.gto .gto-sector-panel { display:grid; grid-template-rows:auto auto minmax(0,1fr); position:relative; align-self:start; min-height:720px; height:100vh; height:100svh; padding:28px 36px 26px 0; overflow:hidden; background:#fff; border-right:1px solid #E1E8E4; }
+.gto .gto-sector-panel::before { content:''; position:absolute; width:240px; height:240px; border-radius:50%; border:24px solid #077A3A; top:-170px; left:-110px; box-shadow:0 0 0 9px #E8F5EC,0 0 0 12px #0A8A43; pointer-events:none; }
+.gto .gto-logo-placa { padding:8px 36px 22px 48px; position:relative; }
+.gto .gto-logo-placa img { display:block; width:min(100%,400px); height:auto; margin:auto; }
+.gto .gto-sector-title { font:900 clamp(26px,2.5vw,44px)/1.13 var(--gto-font-sans); color:#1A2420; margin:12px 0 24px 40px; padding-left:20px; border-left:5px solid #0A8A43; letter-spacing:-.025em; text-wrap:initial; }
+.gto .gto-sector-title span { color:#077A3A; }
+.gto .gto-sectores { display:grid; grid-template-rows:repeat(3,minmax(0,1fr)); gap:8px; min-height:0; padding-bottom:6px; }
+.gto .gto-sector { position:relative; isolation:isolate; min-height:120px; overflow:hidden; border-radius:0 16px 16px 0; background:#DCE4DF; }
+.gto .gto-sector::before { content:''; position:absolute; inset:0; background-image:url('./assets/login-sectores-v2.jpg'); background-repeat:no-repeat; background-size:100% 300%; filter:grayscale(1); z-index:-1; }
+.gto .gto-sector--mina::before { background-position:center top; }
+.gto .gto-sector--industria::before { background-position:center center; }
+.gto .gto-sector--ferrea::before { background-position:center bottom; }
+.gto .gto-sector span { position:absolute; left:24px; bottom:18px; display:block; background:#077A3A; color:white; padding:8px 26px 8px 22px; font:900 clamp(14px,1.3vw,21px)/1.2 var(--gto-font-sans); border-left:5px solid #8CD34A; clip-path:polygon(7% 0,100% 0,93% 100%,0 100%); }
+.gto .gto-login > .form { display:flex; flex-direction:column; justify-content:center; align-items:center; gap:24px; min-width:0; padding:48px 36px; position:relative; background:radial-gradient(ellipse at 10% 5%,#E8F5EC88,transparent 55%),#F6F7F7; }
+.gto .gto-login > .form::before { content:''; pointer-events:none; position:absolute; right:24px; bottom:28px; width:130px; height:50px; opacity:.35; border-top:1px solid #0A8A43; border-bottom:1px solid #0A8A43; transform:skew(-40deg); }
+.gto .gto-login > .form::after { content:'GTO PERÚ · Minería, industria y ferrovías'; text-align:center; font:600 13px/20px var(--gto-font-sans); color:#636E68; max-width:100%; }
+.gto .gto-login .caja { display:grid; gap:20px; width:min(100%,470px); margin:0; padding:36px; background:#fff; border:1px solid #E1E8E4; border-radius:16px; box-shadow:0 12px 40px #173E2810,0 3px 8px #173E2808; min-width:0; position:relative; z-index:1; }
+.gto .gto-login .marca { display:flex; align-items:center; gap:16px; margin:0 0 8px; min-width:0; }
+.gto .gto-login .marca > div { min-width:0; }
+.gto .gto-login .marca img { width:64px; height:64px; object-fit:contain; flex:none; padding:4px; background:#E8F5EC; border-radius:16px; }
+.gto .gto-login .marca small { font:800 11px/16px var(--gto-font-sans); color:#636E68; letter-spacing:.07em; }
+.gto .gto-login .marca h2 { font:900 clamp(22px,1.8vw,28px)/1.14 var(--gto-font-sans); color:#1A2420; margin:4px 0 0; letter-spacing:-.025em; text-wrap:initial; }
+.gto .gto-login .gto-login-sub { color:#636E68; font:600 14px/21px var(--gto-font-sans); margin:-4px 0 2px; }
+.gto .gto-login .gto-campo { display:grid; gap:8px; margin:0; }
+.gto .gto-login .gto-campo label { font:800 14px/20px var(--gto-font-sans); color:#3C4540; margin:0; }
+.gto .gto-login .gto-input,.gto .gto-login .gto-select { height:48px; padding:0 14px; border:1px solid #E1E8E4; border-radius:8px; font:600 16px var(--gto-font-sans); color:#1A2420; background:#fff; min-width:0; width:100%; box-shadow:none; }
+.gto .gto-login .gto-btn--primario { width:100%; height:48px; background:#077A3A; color:#fff; border:0; border-radius:8px; font:900 16px/1 var(--gto-font-sans); margin:2px 0 0; }
+.gto .gto-login .gto-btn--primario:hover { background:#06612E; }
+.gto .gto-login .gto-btn--primario:disabled { background:#ECEFED; color:#5B6660; cursor:wait; }
+.gto .gto-login .olvido { border:0; background:none; padding:0; cursor:pointer; justify-self:end; color:#077A3A; font:700 13px/20px var(--gto-font-sans); margin:-4px 0 0; }
+.gto .gto-login .volver,.gto .gto-login .gto-login-link { justify-self:center; text-align:center; border:0; background:none; padding:0; cursor:pointer; color:#077A3A; font:800 14px/21px var(--gto-font-sans); }
+.gto .gto-login .volver { color:#636E68; font-weight:700; }
+.gto .gto-login .gto-btn--texto { white-space:normal; height:auto; min-height:32px; text-align:center; line-height:21px; padding:0; }
+.gto .gto-login .gto-login-error { margin:0; padding:12px 14px; background:#FDE6E6; border:1px solid #F2BDBF; border-radius:8px; color:#B4232A; font:700 14px/20px var(--gto-font-sans); }
+.gto .gto-login .gto-aviso { max-width:100%; box-shadow:none; }
+.gto .gto-login .gto-segmento { margin:0; }
+.gto .gto-login .gto-ayuda { color:#636E68; font:600 13px/19px var(--gto-font-sans); }
+.gto .gto-login .hidden,.gto .gto-login [hidden] { display:none!important; }
+@media (min-width:761px) and (max-width:1100px) { .gto .gto-login .caja { padding:28px; } .gto .gto-login > .form { padding:32px 24px; } .gto .gto-sector-panel { padding-right:20px; } .gto .gto-logo-placa { padding-left:28px; padding-right:20px; } .gto .gto-sector-title { margin-left:24px; padding-left:14px; font-size:28px; } }
+@media (max-width:760px) {
+ .gto .gto-login { grid-template-columns:1fr; }
+ .gto .gto-sector-panel { display:block; height:auto; min-height:0; padding:24px 20px 16px; border:0; border-bottom:1px solid #E1E8E4; }
+ .gto .gto-logo-placa { padding:0; }
+ .gto .gto-logo-placa img { width:230px; max-width:80%; }
+ .gto .gto-sector-title { margin:16px 0 0; border:0; padding:0; text-align:center; font-size:20px; line-height:1.2; }
+ .gto .gto-sector-title br { display:none; }
+ .gto .gto-sectores { display:none; }
+ .gto .gto-login > .form { padding:24px 16px 32px; gap:20px; justify-content:flex-start; }
+ .gto .gto-login .caja { padding:24px; gap:18px; width:min(470px,100%); }
+ .gto .gto-login .marca img { width:52px; height:52px; border-radius:12px; }
+ .gto .gto-login .marca h2 { font-size:23px; }
+ .gto .gto-login .marca small { font-size:10px; }
+ .gto .gto-login .marca { gap:12px; }
+}
+@media (prefers-reduced-motion:reduce) { .gto .gto-login * { transition:none; } }
