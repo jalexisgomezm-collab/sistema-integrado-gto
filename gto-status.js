@@ -97,8 +97,8 @@
   function otSource(client){return {async list(){const r=await client.rpc('gto_ot_actividad');if(r.error)throw r.error;return r.data;},async read(id){const r=await client.rpc('gto_ot_marcar_leida',{p_ot:id});if(r.error)throw r.error;}};}
 function mountToolbar(host, options={}) {
  const previous=mounts.get(host); if(previous)return previous;
- const shell=el('header','gto-shared-toolbar');
- const brand=el('a','brand');brand.href='https://sistema-integrado-gto.vercel.app';
+ const shell=el('div','gto-shared-toolbar');
+ const brand=el('a','gto-toolbar-brand');brand.href='https://sistema-integrado-gto.vercel.app';
  const logo=el('img');logo.src=BASE+'assets/logo-gto.png';logo.alt='GTO';
  const name=el('span','','Sistema Integrado GTO');name.append(el('b','',options.module||'GTO'));brand.append(logo,name);
  const CLIMA={lat:-16.41,lon:-71.54,lugar:'Arequipa'};
@@ -180,12 +180,21 @@ async function tipoCambio(){
   }catch(e){ set('[data-tcl]','Tipo de cambio · sin datos'); }
 }
 
+ const exchange=wrap.querySelector('[data-tc]').closest('.chip');
+ const isBitacora=options.module==='Bitácora Técnica';
+ if(isBitacora){
+   const shortcut=el('a','chip gto-ot-shortcut');
+   shortcut.href='#/ot';
+   shortcut.innerHTML='<span class="ico">'+I.campana+'</span><span><strong>Órdenes de trabajo</strong><span class="l">Consultar OT / PI</span></span>';
+   exchange.replaceWith(shortcut);
+ }
  const support=wrap.querySelector('[data-abrir=pSoporte]');
  support.onclick=()=>{location.href='https://sistema-integrado-gto.vercel.app/#soporte';};
  const full=wrap.querySelector('[data-full]');
  full.onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{}};
- tic();clima();tipoCambio();
- const timers=[setInterval(tic,1000),setInterval(clima,1800000),setInterval(tipoCambio,3600000)];
+ tic();clima();if(!isBitacora)tipoCambio();
+ const timers=[setInterval(tic,1000),setInterval(clima,1800000)];
+ if(!isBitacora)timers.push(setInterval(tipoCambio,3600000));
  const result={refresh:api.refresh,dispose(){timers.forEach(clearInterval);api.dispose();shell.remove();mounts.delete(host);}};
  mounts.set(host,result);return result;
 }
@@ -200,7 +209,11 @@ async function tipoCambio(){
       api?.dispose();host?.remove();api=host=owner=null;
       if(!target)return;
       owner=target;host=el('div');
-      if(script.dataset.gtoBellOnly!==undefined){target.replaceWith(host);}else target.after(host);
+      if(script.dataset.gtoBellOnly!==undefined){target.replaceWith(host);}else if(script.dataset.gtoModule==='Maestro de Gestión'||script.dataset.gtoModule==='Bitácora Técnica'){
+        target.classList.add('gto-integrated-header');
+        host.className='gto-integrated-host';
+        target.append(host);
+      }else target.after(host);
       const client=global.DirectorioGTO_opts?.sb;
       api=mountView(host,{module:script.dataset.gtoModule,bellOnly:script.dataset.gtoBellOnly!==undefined,activityNote:script.dataset.gtoActivityNote,source:script.dataset.gtoActivity==='ot'&&client?otSource(client):null});
       // Bell replacement target is intentionally gone: observe its containing toolbar instead.
