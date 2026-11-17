@@ -1,1 +1,310 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GTO · Hora, avisos y actividad</title><link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet"><style>*{box-sizing:border-box}body{margin:0;background:#F6F7F7;color:#1A2420;font:600 14px/1.5 Nunito,sans-serif}.demo-note{text-align:center;background:#FFF1D6;padding:10px;font-size:12px;color:#7D4300}header.demo{display:flex;align-items:center;gap:24px;padding:20px 32px;background:#06612E;color:white}header.demo img{width:165px;background:white;border-radius:12px;padding:10px}header.demo small{display:block;letter-spacing:1px;font-size:10px;color:#C8E9D5}header.demo strong{font-size:22px}main{max-width:1100px;margin:36px auto;padding:0 24px}h1{font-size:30px;line-height:1.2;font-weight:900}.demo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.demo-card{background:white;border:1px solid #E1E8E4;padding:24px;border-radius:16px}.demo-card b{color:#06612E;font-size:17px}.demo-card p{color:#636E68;font-size:13px}nav{display:flex;gap:8px;flex-wrap:wrap;margin:24px 0}nav button{background:white;color:#06612E;border:1px solid #CBE1D3;padding:10px 16px;border-radius:10px;font:800 13px Nunito;cursor:pointer}nav button[aria-pressed=true]{background:#077A3A;color:white}.limit{padding:20px;border:1px solid #E1E8E4;border-radius:16px;margin-top:24px;background:white;color:#636E68}@media(max-width:600px){header.demo{padding:16px;gap:16px}header.demo img{width:110px}header.demo strong{font-size:16px}.demo-grid{grid-template-columns:1fr}h1{font-size:25px}}</style></head><body><div class="demo-note">DEMOSTRACIÓN · La OT de ejemplo es ficticia. La integración real requiere activar Supabase.</div><header class="demo"><img src="assets/logo-gto.png" alt="GTO Electrónica y Eléctrico de Potencia"><div><small>SISTEMA INTEGRADO GTO</small><strong id="module">Maestro de Gestión</strong></div></header><div id="status"></div><main><h1>Hora, avisos y actividad en tus sistemas</h1><p>Abre la campana para revisar los avisos generales y probar la lectura de una OT de ejemplo.</p><nav aria-label="Módulos de ejemplo"><button aria-pressed="true" data-module="Maestro de Gestión">Maestro</button><button aria-pressed="false" data-module="Logística y Compras">Logística</button><button aria-pressed="false" data-module="Cotizaciones">Cotizaciones</button><button aria-pressed="false" data-module="Bitácora Técnica">Bitácora</button><button aria-pressed="false" data-module="RR. HH. y Personal">RR. HH.</button><button aria-pressed="false" data-module="Finanzas">Finanzas</button></nav><div class="demo-grid"><article class="demo-card"><b>Hora de Perú</b><p>Fecha y reloj con zona America/Lima, aunque el dispositivo esté configurado en otro país.</p></article><article class="demo-card"><b>Avisos compartidos</b><p>Las visitas, recojos y recordatorios de seguridad provienen de la misma configuración del portal.</p></article><article class="demo-card"><b>OT y lectura por usuario</b><p>La integración propuesta consulta las OT reales que el usuario puede ver. Marcar una alerta no modifica la OT.</p></article></div><div class="limit">En esta demostración, la lectura de la OT se conserva solo en memoria. En producción se guardará por usuario en Supabase. Los demás módulos muestran el estado de conexión real, sin inventar notificaciones.</div></main><script src="recordatorios.js"></script><script src="gto-status.js"></script><script>let read=false,ui;const created=new Date().toISOString();document.addEventListener('click',e=>{const a=e.target.closest('a');if(a&&a.href.includes('00000000-0000-4000-8000-000000000001')){e.preventDefault();const p=document.querySelector('.gto-status-dialog [role=status]');if(p)p.textContent='OT ficticia: no se abrirá ningún registro real.';}});const id='00000000-0000-4000-8000-000000000001';const source={async list(){return [{id,titulo:'Nueva OT: OT-DEMO-001 (ejemplo ficticio)',created_at:created,leida:read}]},async read(){read=true}};function show(name){ui?.dispose();document.getElementById('module').textContent=name;ui=GTOStatus.mount(document.getElementById('status'),{module:name,source:['Maestro de Gestión','Logística y Compras'].includes(name)?source:null});}document.querySelectorAll('[data-module]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-module]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));show(b.dataset.module)});show('Maestro de Gestión');</script></body></html>
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sistema Integrado GTO</title>
+<link rel="icon" type="image/png" href="assets/icono-cot.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--verde:#0A8A43;--verde2:#16A653;--osc:#06612E;--texto:#1A2420;--gris:#3C4540;--suave:#6B766F}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#F5F8F6;color:var(--texto);min-width:320px}
+body{font:600 15px/1.5 Nunito,"Segoe UI",Arial,sans-serif;background:radial-gradient(ellipse at 100% 0,#E0F0E6 0,transparent 46%),#F5F8F6}
+a{color:inherit;text-decoration:none}button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a:focus-visible,button:focus-visible{outline:3px solid var(--verde);outline-offset:5px}
+.portal-header{max-width:1680px;margin:0 auto;padding:26px 40px 22px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.brand{display:flex;align-items:center;gap:24px;flex:none}.brand img{display:block;width:240px;height:auto}.brand span{border-left:1px solid #CFDED5;padding-left:24px;font-size:13px;line-height:1.4;color:var(--suave)}.brand b{display:block;color:var(--osc);font-size:15px}
+.barra{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.chip{display:flex;align-items:center;gap:10px;padding:8px 14px 8px 8px;border:1px solid #DFE8E2;border-radius:100px;background:#FFFFFFB8;min-height:52px}
+.chip .ico{width:34px;height:34px;display:grid;place-items:center;background:#E6F3EB;color:var(--osc);border-radius:50%;flex:none}.ico svg{width:19px;height:19px}
+.chip .v{font-size:17px;line-height:1.2;font-weight:900;font-variant-numeric:tabular-nums;white-space:nowrap}.chip .v small{font-size:11px;color:var(--verde);margin-left:5px}.chip .l{font-size:10px;line-height:1.3;color:var(--suave);margin-top:3px;max-width:200px}.reloj .v{font-size:22px}.reloj .sal{display:none}
+.btn{position:relative;width:44px;height:44px;display:grid;place-items:center;color:var(--osc);border-radius:50%;background:#FFF;border:1px solid #DFE8E2;transition:background .18s,transform .18s}.btn svg{width:21px;height:21px}.btn:hover{background:#E8F5EC;transform:translateY(-2px)}.badge{position:absolute;top:-3px;right:-3px;min-width:18px;height:18px;padding:0 4px;border-radius:20px;background:#B4232A;color:white;font-size:10px;font-weight:900;display:grid;place-items:center}.badge:empty{display:none}
+.portal-main{max-width:1680px;margin:0 auto;padding:14px 40px 24px;display:grid;grid-template-columns:minmax(280px,360px) minmax(0,1fr);gap:40px;align-items:start}
+.intro{position:relative;isolation:isolate;padding:32px 24px 24px;background:linear-gradient(155deg,#08763D,#053B1E);color:#fff;border-radius:36px 36px 100px 36px;overflow:hidden;box-shadow:0 16px 32px #154D2310}
+.intro::before{content:'';position:absolute;z-index:-1;top:-90px;right:-110px;width:290px;height:290px;border:1px solid #FFFFFF24;border-radius:50%;box-shadow:0 0 0 30px #FFFFFF08,0 0 0 60px #FFFFFF05;pointer-events:none}
+.eyebrow{display:flex;align-items:center;gap:8px;font-size:10px;font-weight:900;letter-spacing:1.6px;color:#B9E2CA;text-transform:uppercase}.eyebrow::before{content:'';width:22px;height:2px;background:#7DCC9E}
+.intro h1{font-size:clamp(30px,2.6vw,42px);font-weight:900;letter-spacing:-1.3px;line-height:1.14;margin:18px 0 14px}.intro h1 span{color:#A8E5BD}.intro>p{font-size:14px;line-height:1.6;color:#D2E7DB;max-width:260px}
+.sectores{display:grid;gap:10px;margin-top:28px}.sector{height:133px;position:relative;overflow:hidden;isolation:isolate;border-radius:18px;background:#E0E6E2}.sector:last-child{border-bottom-right-radius:68px}.sector::before{content:'';position:absolute;inset:0;z-index:-1;background:url('assets/login-sectores-v2.jpg') right top/auto 300% no-repeat;transition:transform .6s}.sector:nth-child(2)::before{background-position:right center}.sector:nth-child(3)::before{background-position:right bottom}.sector::after{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,#0D241CB3,transparent 80%)}.sector span{position:absolute;bottom:12px;left:16px;font-size:11px;letter-spacing:1px;font-weight:900}.sector:hover::before{transform:scale(1.035)}
+.module-region{padding-top:14px;min-width:0}.section-heading{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:24px}.section-heading .kicker{font-size:11px;letter-spacing:1.4px;color:var(--verde);text-transform:uppercase;font-weight:900;margin-bottom:5px}.section-heading h2{font-size:29px;font-weight:900;letter-spacing:-.7px;line-height:1.2}.section-heading p{font-size:14px;color:var(--suave);margin-top:6px}.module-count{padding:7px 13px;border-radius:40px;background:#E5F0E9;color:var(--osc);font-size:12px;font-weight:800;white-space:nowrap}
+.lienzo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.card{position:relative;display:flex;flex-direction:column;min-width:0;min-height:202px;background:#FFFFFFE8;border:1px solid #E1E9E4;border-radius:26px;padding:24px 24px 18px;box-shadow:0 4px 14px #214E2E03;transition:transform .2s,box-shadow .2s,border-color .2s;overflow:hidden}
+.card:hover{transform:translateY(-4px);border-color:#9FCEB1;box-shadow:0 16px 36px #145C3010;background:#FFF}.card-top{display:flex;align-items:center;gap:16px;min-width:0;padding-right:0}.card-icon{width:62px;height:62px;display:grid;place-items:center;flex:none;border-radius:20px;background:linear-gradient(145deg,#F1F9F3,#E2F1E7)}.card img{width:54px;height:54px;object-fit:contain}.card h3{font-size:20px;line-height:1.2;font-weight:900;letter-spacing:-.25px;max-width:290px}.card p{font-size:13px;font-weight:600;line-height:1.55;color:var(--suave);margin:16px 0 18px;max-width:95%}.card-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto}.est{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;color:var(--suave)}.est i{width:6px;height:6px;border-radius:50%;background:#B8C2BC}.est b{font-weight:700}.est.ok{color:#397953}.est.ok i{background:#23A45C}.est.mal{color:#A44545}.est.mal i{background:#C35757}.ir{display:grid;place-items:center;width:35px;height:35px;border-radius:50%;border:1px solid #D9E9DF;color:var(--osc);background:#F2F8F4;transition:color .2s,background .2s,transform .2s}.ir svg{width:14px;height:14px}.card:hover .ir{color:#fff;background:var(--verde);border-color:var(--verde);transform:translateX(2px)}
+.portal-footer{max-width:1680px;margin:0 auto;padding:4px 40px 26px;display:flex;align-items:center;justify-content:space-between;gap:20px;color:#7A867E;font-size:11px}.portal-footer b{font-weight:900;color:#577460}.portal-footer span:last-child{display:flex;align-items:center;gap:7px}.portal-footer span:last-child::before{content:'';width:5px;height:5px;border-radius:50%;background:#0A8A43}
+@media(min-width:1500px){.card{min-height:210px;padding:25px 28px 18px}.card h3{font-size:22px}.card p{font-size:14px}.intro{padding-top:38px}.sector{height:140px}}
+@media(max-width:1250px){.portal-header{padding:22px 28px}.brand span{display:none}.brand img{width:210px}.portal-main{padding:12px 28px 24px;grid-template-columns:280px minmax(0,1fr);gap:26px}.intro{padding:28px 20px 22px}.intro h1{font-size:33px}.sector{height:145px}.card{padding:20px;min-height:215px}.card h3{font-size:18px}.card-icon{width:50px;height:50px;border-radius:17px}.card img{width:46px;height:46px}.card-top{gap:12px}.portal-footer{padding-left:28px;padding-right:28px}.chip .l{max-width:160px}}
+@media(max-width:1000px){.portal-header{align-items:flex-start}.brand img{width:180px}.barra{gap:7px}.chip{min-height:44px;padding:6px 11px 6px 6px}.chip .ico{width:28px;height:28px}.chip .v{font-size:15px}.chip .l{font-size:9px;max-width:145px}.reloj .v{font-size:19px}.btn{width:38px;height:38px}.portal-main{grid-template-columns:220px minmax(0,1fr);gap:22px}.intro h1{font-size:29px}.intro>p{font-size:13px}.eyebrow{font-size:9px;letter-spacing:1px}.sector{height:150px}.card{padding:18px;min-height:230px}.card-top{align-items:flex-start;gap:10px}.card-icon{width:42px;height:42px;border-radius:14px}.card img{width:38px;height:38px}.card h3{font-size:17px}.card p{font-size:12px}.lienzo{gap:14px}.section-heading h2{font-size:25px}.module-count{display:none}}
+@media(max-width:760px){.portal-header{padding:20px;flex-direction:column;gap:18px}.brand img{width:205px}.brand span{display:block;font-size:10px;padding-left:16px}.brand{gap:16px}.brand b{font-size:12px}#portalToolbar{width:100%}.barra{justify-content:flex-start;gap:8px}.chip{flex:1;min-height:48px;gap:8px}.chip .v{font-size:16px}.chip .l{max-width:130px;font-size:10px}.chip.reloj{order:1;flex-basis:calc(100% - 154px);flex-grow:1}.btn{order:2;width:40px;height:40px}.portal-main{display:block;padding:2px 20px 24px}.intro{padding:25px 22px 20px;border-radius:28px 28px 56px 28px}.intro h1{font-size:31px;letter-spacing:-.8px;margin:12px 0 10px}.intro h1 br{display:none}.intro>p{max-width:100%;font-size:13px}.sectores{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:20px}.sector{height:90px;border-radius:12px}.sector:last-child{border-bottom-right-radius:30px}.sector::before{background-size:auto 300%;background-position:right top}.sector:nth-child(2)::before{background-position:right center}.sector:nth-child(3)::before{background-position:right bottom}.sector span{font-size:8px;letter-spacing:.4px;left:8px;bottom:8px}.module-region{padding-top:28px}.section-heading{margin-bottom:18px}.section-heading h2{font-size:25px}.section-heading p{font-size:13px}.lienzo{grid-template-columns:1fr;gap:13px}.card{min-height:0;padding:22px;border-radius:24px}.card-top{align-items:center;gap:14px}.card-icon{width:54px;height:54px;border-radius:18px}.card img{width:48px;height:48px}.card h3{font-size:20px;max-width:none}.card p{font-size:13px;margin:14px 0;max-width:100%}.card-bottom{margin-top:0}.ir{width:32px;height:32px}.portal-footer{padding:0 22px 26px;font-size:10px;flex-wrap:wrap;gap:7px}.portal-footer span:last-child{display:none}}
+@media(prefers-reduced-motion:reduce){*,*::before{transition:none!important}}
+/* Paneles flotantes (avisos y soporte) */
+.velo{position:fixed;inset:0;background:rgba(10,20,15,.35);display:none;z-index:50}
+.velo.on{display:block}
+.panel{position:fixed;z-index:60;background:#fff;border-radius:18px;box-shadow:0 20px 50px rgba(10,30,20,.25);width:min(420px,calc(100vw - 32px));display:none;overflow:hidden}
+.panel.on{display:block}
+.panel header{display:flex;align-items:center;gap:12px;padding:18px 20px;background:linear-gradient(135deg,var(--verde2),var(--osc));color:#fff}
+.panel header h4{font-size:18px;font-weight:900;flex:1}
+.panel header button{color:#fff;font-size:24px;line-height:1;width:32px;height:32px;border-radius:50%}
+.panel header button:hover{background:rgba(255,255,255,.15)}
+.avisos{max-height:60vh;overflow:auto;padding:8px 0}
+.aviso{padding:14px 20px;border-bottom:1px solid #EEF2EF}
+.aviso:last-child{border-bottom:0}
+.aviso .f{font-size:12px;font-weight:800;color:var(--verde);text-transform:uppercase;letter-spacing:.5px}
+.aviso b{display:block;font-size:16px;font-weight:900;margin:2px 0 4px}
+.aviso p{font-size:14px;color:var(--gris);line-height:1.45;font-weight:600}
+.grupo{padding:12px 20px 4px;font-size:11px;font-weight:900;letter-spacing:1.2px;color:var(--suave);text-transform:uppercase}
+.aviso{display:flex;gap:14px;align-items:flex-start}
+.aviso .ti{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none;color:#fff}
+.aviso .ti svg{width:21px;height:21px}
+.t-basura{background:#7A5A2B}.t-seguridad{background:#D98A0A}.t-visita{background:#1C6FD1}.t-recojo{background:#0A8A43}
+.aviso.hoy{background:#FFF8EC}
+.aviso.nuevo b::after{content:"NUEVO";margin-left:8px;font-size:10px;background:#D93A3A;color:#fff;padding:2px 6px;border-radius:8px;vertical-align:middle}
+.vacio{padding:24px 20px;color:var(--suave);font-weight:700;text-align:center}
+.sop{padding:20px;display:grid;gap:12px}
+.sop p{color:var(--gris);font-weight:600;font-size:14px;line-height:1.45}
+.sop a{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:14px;border:1px solid #E1E8E4;font-weight:800;transition:.15s}
+.sop a:hover{border-color:var(--verde);background:#F2FAF5}
+.sop a span{display:block;font-size:13px;color:var(--suave);font-weight:600}
+.sop a .i{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:#fff;flex:none}
+.sop a .i svg{width:22px;height:22px}
+
+.demo-main{max-width:1680px;margin:auto;padding:16px 40px}.demo-main nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.demo-main button{border:1px solid #DFE8E2;border-radius:99px;padding:8px 14px;background:white;color:#06612E}.demo-main button[aria-pressed=true]{background:#077A3A;color:white}.demo-main p{color:#636E68;font-size:13px}.gto-status-bell-only.gto-status{padding:0;background:none;border:0}.gto-status-bell-only .btn{position:relative;width:44px;height:44px;padding:0;display:grid;place-items:center;border-radius:50%}.gto-status-bell-only .gto-status-count{position:absolute;top:-3px;right:-3px}@media(max-width:760px){#demo-alert{order:2}.demo-main{padding:0 20px 24px}}</style>
+</head>
+<body>
+<header class="portal-header">
+ <a class="brand" href="/" aria-label="Inicio · Sistema Integrado GTO"><img src="assets/logo-gto.png" alt="GTO · Electrónica y Eléctrico de Potencia"><span>Sistema Integrado GTO<b id="demo-module">Maestro de Gestión</b></span></a>
+ <div id="portalToolbar" aria-label="Información y herramientas"></div>
+</header>
+<main class="demo-main"><nav aria-label="Módulos de ejemplo" id="demo-nav"></nav><p>Vista previa de la cabecera · actividad de ejemplo</p></main><div id="lienzo" hidden></div>
+<footer class="portal-footer"><span><b>GTO PERÚ</b> · Electrónica y Eléctrico de Potencia</span><span>Minería, industria y ferrovías</span></footer>
+
+<div class="velo" id="velo"></div>
+<div class="panel" id="pAvisos" role="dialog" aria-label="Recordatorios"><header><h4>Recordatorios</h4><button data-cerrar aria-label="Cerrar">×</button></header><div class="avisos" id="listaAvisos"></div></div>
+<div class="panel" id="pSoporte" role="dialog" aria-label="Soporte de sistemas"><header><h4>Soporte de sistemas</h4><button data-cerrar aria-label="Cerrar">×</button></header><div class="sop" id="sop"></div></div>
+
+<script src="recordatorios.js?v=1"></script>
+<script>
+/* =====================================================================
+   CONFIGURACIÓN — todo lo que se edita está aquí
+   ===================================================================== */
+
+/* 1) Sistemas (nombre, descripción, icono y dirección) */
+const SISTEMAS = [
+  { nombre:'Sistema de<br>Cotizaciones', desc:'Emite cotizaciones con numeración automática y PDF con formato GTO.', icono:'assets/icono-cot.png', url:'https://cotizador-gto-web.vercel.app' },
+  { nombre:'Maestro de Gestión<br>de Operaciones', desc:'Controla OT y proyectos internos: guías, informes, facturación y cobro.', icono:'assets/icono-maestro.png', url:'https://maestro-gestion-operaciones.vercel.app' },
+  { nombre:'Logística y<br>Compras', desc:'Gestiona requerimientos, cotizaciones de proveedores y órdenes de compra.', icono:'assets/icono-compras.png', url:'https://gto-oc-sistema-app.vercel.app' },
+  { nombre:'Bitácora Técnica<br>Laboratorio y Taller', desc:'Registra avances diarios por OT, historial por serie e ingreso de componentes.', icono:'assets/icono-taller.png', url:'https://bitacora-tecnica-gto.vercel.app' },
+  { nombre:'RRHH y<br>Personal', desc:'Gestiona el personal, fichas, tareo, planillas y boletas.', icono:'assets/icono-rrhh.png', url:'https://gto-rrhh.vercel.app' },
+  { nombre:'GTO<br>Finanzas', desc:'Administra el presupuesto, ingresos, egresos y factoring.', icono:'assets/icono-finanzas.png', url:'https://gto-finanzas.vercel.app' },
+];
+
+/* 2) Recordatorios de la campana: se editan en el archivo recordatorios.js */
+
+/* 3) Soporte de sistemas */
+const SOPORTE = {
+  whatsapp:'51921502895',                 // número con código de país, sin + ni espacios
+  correo:'jalexisgomezm@gmail.com',
+  nombre:'Soporte de sistemas GTO',
+};
+
+/* 4) Clima (Arequipa) */
+const CLIMA = { lat:-16.41, lon:-71.54, lugar:'Arequipa' };
+
+/* ===================================================================== */
+const TZ='America/Lima';
+const svg=(d,w=2.2)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const I={
+  flecha:svg('<path d="M9 5l7 7-7 7"/>',3.2),
+  reloj:svg('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
+  sol:svg('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),
+  nube:svg('<path d="M7 18h10a4 4 0 0 0 .6-7.96A6 6 0 0 0 6.1 9.2 4.5 4.5 0 0 0 7 18z"/>'),
+  solnube:svg('<path d="M8 3v1.5M3.5 8H5M4.8 4.8l1 1M12.2 4.8l-1 1"/><path d="M5.5 10.5a3 3 0 0 1 5.6-1.6"/><path d="M8.5 20h9a3.5 3.5 0 0 0 .5-6.96A5 5 0 0 0 8.3 12a3.9 3.9 0 0 0 .2 8z"/>'),
+  lluvia:svg('<path d="M7 15h10a4 4 0 0 0 .6-7.96A6 6 0 0 0 6.1 6.2 4.5 4.5 0 0 0 7 15z"/><path d="M8 18l-1 3M12 18l-1 3M16 18l-1 3"/>'),
+  tormenta:svg('<path d="M7 15h10a4 4 0 0 0 .6-7.96A6 6 0 0 0 6.1 6.2 4.5 4.5 0 0 0 7 15z"/><path d="M12 15l-2 4h3l-2 4"/>'),
+  niebla:svg('<path d="M4 9h16M3 13h18M5 17h14"/>'),
+  dolar:svg('<path d="M12 2v20"/><path d="M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>'),
+  campana:svg('<path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>'),
+  soporte:svg('<path d="M3 14v-3a9 9 0 0 1 18 0v3"/><path d="M21 15a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2 2z"/><path d="M3 15a2 2 0 0 0 2 2h1v-6H5a2 2 0 0 0-2 2z"/><path d="M18 17v1a3 3 0 0 1-3 3h-3"/>'),
+  completa:svg('<path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/>'),
+  salir:svg('<path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/>'),
+  wa:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg>',
+  basura:svg('<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14"/><path d="M10 11v6M14 11v6"/>'),
+  seguridad:svg('<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="m9 12 2 2 4-4"/>'),
+  visita:svg('<circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 4.5a3 3 0 0 1 0 6M21 20a5 5 0 0 0-4-4.9"/>'),
+  recojo:svg('<path d="M1 6h13v10H1z"/><path d="M14 9h4l3 3v4h-7"/><circle cx="5.5" cy="17.5" r="2"/><circle cx="17.5" cy="17.5" r="2"/>'),
+  mail:svg('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>'),
+};
+
+/* --- Construcción --- */
+const barra=`<div class="barra">
+  <div class="chip" title="Clima en ${CLIMA.lugar}"><span class="ico" data-cico>${I.solnube}</span><div><div class="v" data-ct>-- °C</div><div class="l" data-cl>${CLIMA.lugar}</div></div></div>
+  <div class="chip" title="Tipo de cambio del dólar"><span class="ico">${I.dolar}</span><div><div class="v" data-tc>S/ --</div><div class="l" data-tcl>Tipo de cambio</div></div></div>
+  <div class="chip reloj" role="timer"><span class="ico">${I.reloj}</span><div><div class="v"><span data-h>--:--</span><small data-s></small></div><div class="l" data-f></div></div><div class="sal" data-g></div></div>
+  <button class="btn" data-abrir="pAvisos" title="Recordatorios" aria-label="Recordatorios">${I.campana}<span class="badge" data-badge></span></button>
+  <button class="btn" data-abrir="pSoporte" title="Soporte de sistemas" aria-label="Soporte de sistemas">${I.soporte}</button>
+  <button class="btn" data-full title="Pantalla completa" aria-label="Pantalla completa">${I.completa}</button>
+</div>`;
+const tarjeta=(s,i)=>`<a class="card" href="${s.url}" target="_blank" rel="noopener" aria-label="${s.nombre.replace('<br>',' ')}">
+ <div class="card-top"><span class="card-icon"><img src="${s.icono}" alt=""></span><h3>${s.nombre.replace('<br>',' ')}</h3></div>
+ <p>${s.desc}</p><div class="card-bottom"><span class="est" data-est="${i}"><i></i><b>Verificando…</b></span><span class="ir" aria-hidden="true">${I.flecha}</span></div></a>`;
+document.getElementById('lienzo').innerHTML=SISTEMAS.map(tarjeta).join('');
+document.getElementById('portalToolbar').innerHTML=barra;
+const $$=q=>document.querySelectorAll(q);
+const set=(q,html)=>$$(q).forEach(e=>e.innerHTML=html);
+
+/* --- Reloj (hora de Perú) --- */
+const fH=new Intl.DateTimeFormat('es-PE',{timeZone:TZ,hour:'2-digit',minute:'2-digit',hour12:true});
+const fS=new Intl.DateTimeFormat('es-PE',{timeZone:TZ,second:'2-digit'});
+const fF=new Intl.DateTimeFormat('es-PE',{timeZone:TZ,weekday:'long',day:'numeric',month:'long',year:'numeric'});
+const fHH=new Intl.DateTimeFormat('es-PE',{timeZone:TZ,hour:'numeric',hour12:false});
+function tic(){
+  const d=new Date(), p=fH.formatToParts(d), v=t=>(p.find(x=>x.type===t)||{}).value||'';
+  const ap=v('dayPeriod').replace(/[.\s]/g,'').toUpperCase();
+  const h=+fHH.format(d);
+  set('[data-h]',v('hour')+':'+v('minute'));
+  set('[data-s]',fS.format(d).padStart(2,'0')+' '+ap);
+  set('[data-f]',fF.format(d).replace(/^./,c=>c.toUpperCase()));
+  set('[data-g]',h<12?'Buenos<br>días':h<19?'Buenas<br>tardes':'Buenas<br>noches');
+}
+tic(); setInterval(tic,1000);
+
+/* --- Clima (Open-Meteo, sin clave) --- */
+function iconoClima(c){ if(c===0)return[I.sol,'Despejado']; if(c<=2)return[I.solnube,'Parcial nublado']; if(c===3)return[I.nube,'Nublado'];
+  if(c<=48)return[I.niebla,'Neblina']; if(c<=67||(c>=80&&c<=82))return[I.lluvia,'Lluvia']; if(c<=77)return[I.nube,'Nieve']; return[I.tormenta,'Tormenta']; }
+async function clima(){
+  try{
+    const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${CLIMA.lat}&longitude=${CLIMA.lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=${encodeURIComponent(TZ)}&forecast_days=1`);
+    const j=await r.json(); const [ic,txt]=iconoClima(j.current.weather_code);
+    set('[data-cico]',ic); set('[data-ct]',Math.round(j.current.temperature_2m)+' °C');
+    set('[data-cl]',`${CLIMA.lugar} · ${txt} · ${Math.round(j.daily.temperature_2m_min[0])}°/${Math.round(j.daily.temperature_2m_max[0])}°`);
+  }catch(e){ set('[data-cl]',CLIMA.lugar+' · sin datos'); }
+}
+clima(); setInterval(clima,30*60*1000);
+
+/* --- Tipo de cambio (SUNAT; si no responde, referencial de mercado) --- */
+const n3=x=>Number(x).toFixed(3);
+async function tipoCambio(){
+  try{
+    const r=await fetch('https://api.apis.net.pe/v1/tipo-cambio-sunat'); if(!r.ok) throw 0;
+    const j=await r.json(); if(!j.venta) throw 0;
+    set('[data-tc]',`S/ ${n3(j.venta)}<small>V</small>`); set('[data-tcl]',`SUNAT · compra ${n3(j.compra)}`); return;
+  }catch(e){}
+  try{
+    const r=await fetch('https://open.er-api.com/v6/latest/USD'); const j=await r.json();
+    set('[data-tc]',`S/ ${n3(j.rates.PEN)}`); set('[data-tcl]','Dólar · referencial');
+  }catch(e){ set('[data-tcl]','Tipo de cambio · sin datos'); }
+}
+tipoCambio(); setInterval(tipoCambio,60*60*1000);
+
+/* --- Estado de cada sistema --- */
+async function estado(){
+  SISTEMAS.forEach(async(s,i)=>{
+    const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),9000); let ok=false;
+    try{ await fetch(s.url,{mode:'no-cors',cache:'no-store',signal:ctl.signal}); ok=true; }catch(e){}
+    clearTimeout(t);
+    $$(`[data-est="${i}"]`).forEach(e=>{ e.className='est '+(ok?'ok':'mal'); e.querySelector('b').textContent=ok?'En línea':'Sin conexión'; });
+  });
+}
+
+
+/* --- Recordatorios (campana) --- */
+const EV=window.EVENTOS||[], FX=window.FIJOS||[], SG=window.SEGURIDAD||[];
+const fISO=new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'});
+const fHM=new Intl.DateTimeFormat('en-GB',{timeZone:TZ,hour:'2-digit',minute:'2-digit',hour12:false});
+const fDia=new Intl.DateTimeFormat('es-PE',{timeZone:'UTC',weekday:'long',day:'numeric',month:'long'});
+const fWd=new Intl.DateTimeFormat('en-US',{timeZone:TZ,weekday:'short'});
+const WD={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6};
+const addDias=(iso,n)=>{const d=new Date(iso+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)};
+const LS='gto_recordatorios_vistos';
+const leer=()=>{try{return JSON.parse(localStorage.getItem(LS)||'[]')}catch(e){return[]}};
+function recordatorios(){
+  const d=new Date(), hoy=fISO.format(d), manana=addDias(hoy,1), hm=fHM.format(d), wd=WD[fWd.format(d)];
+  const items=[];
+  // Eventos: hoy y mañana (activos); próximos 30 días (informativos)
+  EV.filter(e=>e&&e.fecha>=hoy).sort((a,b)=>(a.fecha+(a.hora||'')).localeCompare(b.fecha+(b.hora||''))).forEach(e=>{
+    const cuando=e.fecha===hoy?'Hoy':e.fecha===manana?'Mañana':fDia.format(new Date(e.fecha+'T12:00:00Z')).replace(/^./,c=>c.toUpperCase());
+    if(e.fecha<=addDias(hoy,30)) items.push({id:'ev-'+e.fecha+'-'+e.titulo,g:e.fecha<=manana?'hoy':'prox',tipo:e.tipo==='recojo'?'recojo':'visita',
+      f:`${cuando}${e.hora?' · '+e.hora+' h':''} · ${e.tipo==='recojo'?'Recojo':'Visita'}`,titulo:e.titulo,texto:e.texto||'',activo:e.fecha<=manana});
+  });
+  // Fijos semanales
+  FX.forEach((r,i)=>{
+    if(r.dias.includes(wd)&&hm>=(r.desde||'00:00')&&hm<=(r.hasta||'23:59'))
+      items.push({id:`fx-${i}-${hoy}`,g:'hoy',tipo:r.tipo||'seguridad',f:'Hoy',titulo:r.titulo,texto:r.texto,activo:true});
+    else if(r.previo&&r.dias.includes((wd+1)%7)&&hm>='15:00')
+      items.push({id:`fxp-${i}-${hoy}`,g:'hoy',tipo:r.tipo||'seguridad',f:'Mañana',titulo:r.tituloPrevio||r.titulo,texto:r.textoPrevio||r.texto,activo:true});
+  });
+  // Seguridad del día (rota)
+  if(SG.length){ const n=Math.floor(new Date(hoy+'T00:00:00Z')/864e5)%SG.length;
+    items.push({id:'sg-'+hoy,g:'seg',tipo:'seguridad',f:'Seguridad del día',titulo:'Recuerda',texto:SG[n],activo:true}); }
+  return items;
+}
+function pintarAvisos(){
+  const it=recordatorios(), vistos=leer();
+  set('[data-badge]',it.filter(x=>x.activo&&!vistos.includes(x.id)).length||'');
+  const bloque=(g,t)=>{const l=it.filter(x=>x.g===g); return l.length?`<div class="grupo">${t}</div>`+l.map(x=>`<div class="aviso${g==='hoy'?' hoy':''}${x.activo&&!vistos.includes(x.id)?' nuevo':''}"><span class="ti t-${x.tipo}">${I[x.tipo]||I.seguridad}</span><div><span class="f">${x.f}</span><b>${x.titulo}</b><p>${x.texto}</p></div></div>`).join(''):''};
+  const html=bloque('hoy','Hoy y mañana')+bloque('prox','Próximas visitas y recojos')+bloque('seg','Seguridad');
+  document.getElementById('listaAvisos').innerHTML=html||'<div class="vacio">No hay recordatorios por ahora.</div>';
+}
+pintarAvisos(); setInterval(pintarAvisos,60*1000);
+
+/* --- Soporte --- */
+document.getElementById('sop').innerHTML=`<p>¿Algún sistema no carga o tienes una consulta? Escríbenos e indica el sistema y lo que ocurre.</p>
+  <a href="https://wa.me/${SOPORTE.whatsapp}?text=${encodeURIComponent('Hola, necesito soporte con el Sistema Integrado GTO: ')}" target="_blank" rel="noopener"><span class="i" style="background:#25D366">${I.wa}</span><div>WhatsApp<span>+${SOPORTE.whatsapp.replace(/^(\d{2})(\d{3})(\d{3})(\d{3})$/,'$1 $2 $3 $4')}</span></div></a>
+  <a href="mailto:${SOPORTE.correo}?subject=${encodeURIComponent('Soporte Sistema Integrado GTO')}"><span class="i" style="background:#0A8A43">${I.mail}</span><div>Correo<span>${SOPORTE.correo}</span></div></a>`;
+
+/* --- Abrir / cerrar paneles --- */
+const velo=document.getElementById('velo');
+function cerrar(){ $$('.panel.on').forEach(p=>p.classList.remove('on')); velo.classList.remove('on'); }
+function abrir(id,btn){
+  cerrar(); const p=document.getElementById(id); p.classList.add('on'); velo.classList.add('on');
+  const r=btn.getBoundingClientRect(); const w=p.offsetWidth;
+  p.style.top=Math.min(r.bottom+10,window.innerHeight-p.offsetHeight-16)+'px';
+  p.style.left=Math.max(16,Math.min(r.right-w,window.innerWidth-w-16))+'px';
+  if(id==='pAvisos'){ try{localStorage.setItem(LS,JSON.stringify(recordatorios().map(a=>a.id)))}catch(e){} setTimeout(pintarAvisos,1500); set('[data-badge]',''); }
+}
+document.addEventListener('click',e=>{
+  const a=e.target.closest('[data-abrir]'); if(a){ abrir(a.dataset.abrir,a); return; }
+  if(e.target.closest('[data-cerrar]')||e.target===velo) cerrar();
+  const f=e.target.closest('[data-full]'); if(f){ document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen().catch(()=>{}); }
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') cerrar(); });
+document.addEventListener('fullscreenchange',()=>{ const on=!!document.fullscreenElement;
+  $$('[data-full]').forEach(b=>{ b.innerHTML=on?I.salir:I.completa; b.title=on?'Salir de pantalla completa':'Pantalla completa'; }); });
+</script>
+<script src="gto-status.js"></script>
+<script>
+const demoModules=['Maestro de Gestión','Logística y Compras','Cotizaciones','Bitácora Técnica','RR. HH. y Personal','Finanzas'];
+const alertHost=document.createElement('div');
+alertHost.id='demo-alert';
+const oldBell=document.querySelector('[data-abrir="pAvisos"]');
+oldBell.replaceWith(alertHost);
+const demoId='00000000-0000-4000-8000-000000000001';
+const demoCreated=new Date().toISOString();
+let demoRead=false,demoUI;
+const demoButtons=demoModules.map(name=>{
+  const b=document.createElement('button');b.type='button';b.textContent=name;
+  b.onclick=()=>selectModule(name);
+  document.getElementById('demo-nav').append(b);return b;
+});
+function selectModule(name){
+  document.getElementById('demo-module').textContent=name;
+  demoButtons.forEach(b=>b.setAttribute('aria-pressed',String(b.textContent===name)));
+  demoUI?.dispose();
+  demoUI=GTOStatus.mount(alertHost,{bellOnly:true,module:name,source:demoModules.indexOf(name)<2?{
+    async list(){return [{id:demoId,titulo:'Nueva OT: OT-DEMO-001 (ejemplo ficticio)',created_at:demoCreated,leida:demoRead}];},
+    async read(){demoRead=true;}
+  }:null});
+  const bell=alertHost.querySelector('button');
+  bell.classList.add('btn');
+  Array.from(bell.childNodes).filter(n=>n.nodeType===Node.TEXT_NODE).forEach(n=>n.remove());
+}
+document.addEventListener('click',e=>{
+  if(e.target.closest('a')?.href.endsWith(demoId)){
+    e.preventDefault();
+    document.querySelector('.gto-status-dialog [role=status]').textContent='Esta OT pertenece a la demostración.';
+  }
+});
+selectModule(demoModules[0]);
+</script></body>
+</html>
+
