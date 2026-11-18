@@ -33,7 +33,7 @@
   }
   function mount(host, options={}) {
     if(mounts.has(host))return mounts.get(host);
-    const css=BASE+'gto-status.css?v=20261117-4';
+    const css=BASE+'gto-status.css?v=20261118-6';
     if(!Array.from(document.querySelectorAll('link[rel=stylesheet]')).some(l=>l.href===css)){const l=el('link');l.rel='stylesheet';l.href=css;document.head.append(l);}
     const root=el('div','gto-status'+(options.bellOnly?' gto-status-bell-only':''));
     root.setAttribute('aria-label','Hora de Perú y notificaciones');
@@ -46,9 +46,21 @@
     if(!options.bellOnly)root.append(clock,note);root.append(bell);host.append(root);
     const backdrop=el('div','gto-status-backdrop'), dialog=el('section','gto-status-dialog');
     dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-label','Avisos y actividad');dialog.tabIndex=-1;
-    const head=el('header'), title=el('h2','','Avisos y actividad'), close=el('button','','Cerrar');close.type='button';head.append(title,close);
+    const head=el('header'), title=el('h2','','Bandeja de avisos'), close=el('button','','Cerrar');close.type='button';head.append(title,close);
     const status=el('p'), list=el('div');status.setAttribute('role','status');dialog.append(head,status,list);document.body.append(backdrop,dialog);backdrop.hidden=dialog.hidden=true;
     let disposed=false, general=[], activity=[], loading=false, error='', configError='', lastFocus=null, generation=0;
+    const filters=el('form','gto-inbox-filters');
+    const search=el('input'); search.type='search';search.placeholder='Buscar aviso u OT';
+    function field(label,input){const wrap=el('label','',label);wrap.append(input);filters.append(wrap);return input;}
+    field('Buscar',search);
+    function select(label,values){const input=el('select');values.forEach(([value,text])=>input.add(new Option(text,value)));return field(label,input);}
+    const origin=select('Sistema',[['','Todos'],['general','Portal GTO'],...(options.source?[['activity',options.module||'Operaciones']]:[])]);
+    const state=select('Estado',[['','Todos'],['new','Sin leer'],['seen','Leído']]);
+    const dateFrom=field('Desde',el('input')),dateTo=field('Hasta',el('input'));dateFrom.type=dateTo.type='date';
+    const clear=el('button','','Limpiar');clear.type='reset';filters.append(clear);
+    filters.oninput=redraw;filters.onreset=()=>setTimeout(redraw,0);filters.onsubmit=e=>e.preventDefault();
+    dialog.insertBefore(filters,status);
+    function matches(system,read,day,text){return (!origin.value||origin.value===system)&&(!state.value||state.value===(read?'seen':'new'))&&(!dateFrom.value||day>=dateFrom.value)&&(!dateTo.value||day<=dateTo.value)&&text.toLocaleLowerCase().includes(search.value.trim().toLocaleLowerCase());}
     const key='gto_recordatorios_vistos';
     function seen(){try{const v=JSON.parse(localStorage.getItem(key)||'[]');return Array.isArray(v)?v.filter(x=>typeof x==='string'):[];}catch{return [];}}
     function redraw(){
@@ -61,15 +73,18 @@
       if(configError)list.append(el('p','gto-status-error',configError));
       list.append(el('h3','','Avisos generales'));
       if(!general.length)list.append(el('p','','No hay avisos generales para esta fecha.'));
-      general.forEach(x=>{const row=el('article','gto-status-item'+(!read.includes(x.id)?' unread':''));row.append(el('small','',x.label),el('strong','',x.title),el('p','',x.text));list.append(row);});
-      if(general.some(x=>!read.includes(x.id))){const b=el('button','','Marcar avisos generales como leídos');b.type='button';b.onclick=()=>{try{localStorage.setItem(key,JSON.stringify([...new Set([...read,...general.map(x=>x.id)])].slice(-300)));redraw();}catch{status.textContent='El navegador no permitió guardar la lectura de los avisos.';}};list.append(b);}
+      const shownGeneral=general.filter(x=>matches('general',read.includes(x.id),x.id.startsWith('ev-')?x.id.slice(3,13):x.label==='Mañana'?addDays(context(new Date()).day,1):context(new Date()).day,[x.title,x.text,x.label].join(' ')));
+      const shownActivity=activity.filter(x=>matches('activity',x.leida,context(new Date(x.created_at)).day,x.titulo));
+      if(!shownGeneral.length&&!shownActivity.length&&!loading)list.append(el('p','','Sin resultados para estos filtros.'));
+      shownGeneral.forEach(x=>{const row=el('article','gto-status-item'+(!read.includes(x.id)?' unread':''));row.append(el('small','',x.label),el('strong','',x.title),el('p','',x.text));list.append(row);});
+      if(shownGeneral.some(x=>!read.includes(x.id))){const b=el('button','','Marcar avisos generales como leídos');b.type='button';b.onclick=()=>{try{localStorage.setItem(key,JSON.stringify([...new Set([...read,...shownGeneral.map(x=>x.id)])].slice(-300)));redraw();}catch{status.textContent='El navegador no permitió guardar la lectura de los avisos.';}};list.append(b);}
       list.append(el('h3','','Actividad del sistema'));
       if(!options.source){list.append(el('p','',options.activityNote||'Los avisos generales están disponibles. Las alertas de actividad de este módulo aún no están conectadas.'));return;}
       if(loading)list.append(el('p','','Consultando actividad…'));
       if(error){list.append(el('p','gto-status-error',error));const retry=el('button','','Reintentar');retry.type='button';retry.onclick=refresh;list.append(retry);}
       if(!loading&&!error&&!activity.length)list.append(el('p','','No hay OT recientes disponibles para tu usuario.'));
       if(activity.length)list.append(el('p','','Hasta 50 OT de los últimos 30 días. La lectura se guarda con tu usuario.'));
-      activity.forEach(x=>{const row=el('article','gto-status-item'+(!x.leida?' unread':''));row.append(el('strong','',x.titulo),el('p','',new Date(x.created_at).toLocaleString('es-PE',{timeZone:'America/Lima'})));
+      shownActivity.forEach(x=>{const row=el('article','gto-status-item'+(!x.leida?' unread':''));row.append(el('strong','',x.titulo),el('p','',new Date(x.created_at).toLocaleString('es-PE',{timeZone:'America/Lima'})));
         const a=el('a','','Abrir OT');a.href='https://maestro-gestion-operaciones.vercel.app/#/servicio/'+encodeURIComponent(x.id);row.append(a);
         if(!x.leida){const b=el('button','','Marcar como leída');b.type='button';b.onclick=async()=>{b.disabled=true;try{await options.source.read(x.id);if(disposed)return;x.leida=true;status.textContent='Lectura guardada.';redraw();}catch{status.textContent='No se pudo guardar la lectura. Reintenta.';b.disabled=false;}};row.append(b);}else row.append(el('small','gto-status-success','Leída'));list.append(row);
       });
@@ -83,7 +98,7 @@
     }
     function hide(){dialog.hidden=backdrop.hidden=true;bell.setAttribute('aria-expanded','false');lastFocus?.focus?.();}
     function open(){lastFocus=document.activeElement;dialog.hidden=backdrop.hidden=false;bell.setAttribute('aria-expanded','true');status.textContent='';redraw();close.focus();config().then(()=>{configError='';redraw();}).catch(()=>{configError='No se pudieron cargar los avisos generales. Reabre el panel para reintentar.';redraw();});refresh();}
-    function keydown(e){if(dialog.hidden)return;if(e.key==='Escape'){e.preventDefault();hide();}if(e.key==='Tab'){const nodes=Array.from(dialog.querySelectorAll('button:not([disabled]),a[href]'));const first=nodes[0],last=nodes[nodes.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}}}
+    function keydown(e){if(dialog.hidden)return;if(e.key==='Escape'){e.preventDefault();hide();}if(e.key==='Tab'){const nodes=Array.from(dialog.querySelectorAll('button:not([disabled]),a[href],input,select'));const first=nodes[0],last=nodes[nodes.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}}}
     function tick(){const now=new Date();time.textContent=clockFormat.format(now);time.dateTime=now.toISOString();label.textContent=dateFormat.format(now);}
     function visible(){if(!document.hidden){tick();refresh();}}
     function onStorage(e){if(e.key===key)redraw();}
