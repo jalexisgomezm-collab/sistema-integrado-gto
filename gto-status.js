@@ -271,7 +271,7 @@ async function tipoCambio(){
  support.hidden=true;full.hidden=true;
  addAction(toolPanel,'Soporte de sistemas',()=>support.click());
  addAction(toolPanel,'Pantalla completa',()=>{toolsMenu.open=false;full.click();});
- const portal=el('a','gto-toolbar-action','Menú GTO');portal.href='https://sistema-integrado-gto.vercel.app';toolPanel.append(portal);
+ const portal=el('a','gto-toolbar-action','Menú GTO');portal.href='https://sistema-integrado-gto.vercel.app';if(moduleName==='Maestro de Gestión'){portal.classList.add('gto-portal-access');quick.append(portal);quick.hidden=false;}else toolPanel.append(portal);
  if(logout)mirror(toolPanel,'Salir',logout,!!originalHeader?.contains(logout));
  actionsBar.append(toolsMenu);
  for(const panel of [indicators,toolsMenu]){
