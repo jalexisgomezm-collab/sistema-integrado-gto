@@ -68,6 +68,13 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--verde);outline-offs
 .sop a .i{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:#fff;flex:none}
 .sop a .i svg{width:22px;height:22px}
 
+
+@media screen {
+ body{background-color:#f6f7f7;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22260%22%20viewBox%3D%220%200%20640%20260%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%2375a88a%22%20opacity%3D%22.38%22%20stroke-width%3D%221.2%22%3E%3Cpath%20d%3D%22M0%2044h50l22-22h92m-164%2032h57l22-22h48m233%20130h79l27-27h72m-178%2038h86l27-27h39M560%20235h28l16-16h36%22%2F%3E%3Ccircle%20cx%3D%22167%22%20cy%3D%2222%22%20r%3D%223%22%2F%3E%3Ccircle%20cx%3D%22130%22%20cy%3D%2232%22%20r%3D%223%22%2F%3E%3Ccircle%20cx%3D%22541%22%20cy%3D%22135%22%20r%3D%223%22%2F%3E%3Ccircle%20cx%3D%22515%22%20cy%3D%22146%22%20r%3D%223%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}
+ .portal-main{display:block}.module-region{padding-top:24px}.ir{display:inline-flex;gap:6px;width:auto;padding:0 12px;border-radius:30px;font-weight:800}.card{background:#fff}
+}
+@media(min-width:761px){.intro{display:grid;grid-template-columns:minmax(195px,1fr) 3fr;align-items:center;gap:20px;padding:14px 16px 14px 30px;border-radius:24px}.intro h1{margin:0;font-size:clamp(26px,2.4vw,40px)}.intro>.eyebrow,.intro>p{display:none}.sectores{margin:0;grid-template-columns:repeat(3,minmax(0,1fr))}.sector,.sector:last-child{height:clamp(120px,11vw,175px);border-radius:14px}.card{min-height:165px;padding:20px}.section-heading{margin-bottom:16px}}
+@media(min-width:1060px){.lienzo{grid-template-columns:repeat(3,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -157,7 +164,7 @@ const barra=`<div class="barra">
 </div>`;
 const tarjeta=(s,i)=>`<a class="card" href="${s.url}" target="_blank" rel="noopener" aria-label="${s.nombre.replace('<br>',' ')}">
  <div class="card-top"><span class="card-icon"><img src="${s.icono}" alt=""></span><h3>${s.nombre.replace('<br>',' ')}</h3></div>
- <p>${s.desc}</p><div class="card-bottom"><span class="est" data-est="${i}"><i></i><b>Verificando…</b></span><span class="ir" aria-hidden="true">${I.flecha}</span></div></a>`;
+ <p>${s.desc}</p><div class="card-bottom"><span class="est" data-est="${i}"><i></i><b>Verificando…</b></span><span class="ir" aria-hidden="true">Ingresar ${I.flecha}</span></div></a>`;
 document.getElementById('lienzo').innerHTML=SISTEMAS.map(tarjeta).join('');
 document.getElementById('portalToolbar').innerHTML=barra;
 const $$=q=>document.querySelectorAll(q);
