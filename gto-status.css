@@ -70,3 +70,9 @@ header.top.gto-integrated-header:has([data-gto-module="RR. HH. y Personal"]) > .
 .gto-shared-toolbar [hidden],header [data-gto-mirrored]{display:none!important}
 .gto-shared-toolbar :is(button,a,summary):focus-visible{outline:2px solid #077A3A;outline-offset:2px}
 @media(max-width:850px){.gto-shared-toolbar{flex-direction:row;justify-content:flex-start;align-items:center;padding:10px 14px;gap:10px}.gto-shared-toolbar .barra{gap:6px}.gto-toolbar-indicators>.gto-toolbar-popover{right:auto;left:0}}
+
+/* Identidad electrónica GTO: superficies de trabajo */
+@media screen {
+ body:has(.gto-shared-toolbar), body:has(.gto-shared-toolbar) :is(main,.workspace-body,.ops-main){background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22260%22%20viewBox%3D%220%200%20640%20260%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%2375a88a%22%20opacity%3D%22.38%22%20stroke-width%3D%221.2%22%3E%3Cpath%20d%3D%22M0%2044h50l22-22h92m-164%2032h57l22-22h48m233%20130h79l27-27h72m-178%2038h86l27-27h39M560%20235h28l16-16h36%22%2F%3E%3Ccircle%20cx%3D%22167%22%20cy%3D%2222%22%20r%3D%223%22%2F%3E%3Ccircle%20cx%3D%22130%22%20cy%3D%2232%22%20r%3D%223%22%2F%3E%3Ccircle%20cx%3D%22541%22%20cy%3D%22135%22%20r%3D%223%22%2F%3E%3Ccircle%20cx%3D%22515%22%20cy%3D%22146%22%20r%3D%223%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");background-repeat:repeat}
+ .gto-shared-toolbar .barra button.btn svg{color:#06612e;stroke:currentColor}
+}
