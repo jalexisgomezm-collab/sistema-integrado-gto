@@ -75,6 +75,8 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--verde);outline-offs
 }
 @media(min-width:761px){.intro{display:grid;grid-template-columns:minmax(195px,1fr) 3fr;align-items:center;gap:20px;padding:14px 16px 14px 30px;border-radius:24px}.intro h1{margin:0;font-size:clamp(26px,2.4vw,40px)}.intro>.eyebrow,.intro>p{display:none}.sectores{margin:0;grid-template-columns:repeat(3,minmax(0,1fr))}.sector,.sector:last-child{height:clamp(120px,11vw,175px);border-radius:14px}.card{min-height:165px;padding:20px}.section-heading{margin-bottom:16px}}
 @media(min-width:1060px){.lienzo{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(min-width:1100px){.module-region{display:grid;grid-template-columns:minmax(0,2.7fr) minmax(260px,1fr);column-gap:20px}.module-region .section-heading{grid-column:1/-1}.module-region .lienzo{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.portal-notices{align-self:start;background:white;border:1px solid #dae6de;border-radius:16px;padding:20px}.portal-notices h3{color:#06612e;margin:0 0 12px}.portal-notices article{padding:12px 0;border-top:1px solid #e1e8e4}.portal-notices small{display:block;color:#54685b}.portal-notices button{color:#06612e;font-weight:800;margin-top:12px}.portal-notices p{font-size:13px}@media(max-width:1099px){.portal-notices{margin-top:16px}}
 </style>
 </head>
 <body>
@@ -92,6 +94,7 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--verde);outline-offs
  <section class="module-region" aria-labelledby="module-title">
   <div class="section-heading"><div><div class="kicker">Sistema Integrado GTO Perú</div><h2 id="module-title">Tus sistemas de trabajo</h2><p>Selecciona un sistema para ingresar.</p></div><span class="module-count">6 sistemas</span></div>
   <nav class="lienzo" id="lienzo" aria-label="Sistemas de GTO"></nav>
+ <aside class="portal-notices"><h3>Avisos recientes</h3><div id="recent-notices"></div><button type="button" data-abrir="pAvisos">Ver todos los avisos →</button></aside>
  </section>
 </main>
 <footer class="portal-footer"><span><b>GTO PERÚ</b> · Electrónica y Eléctrico de Potencia</span><span>Minería, industria y ferrovías</span></footer>
@@ -258,6 +261,9 @@ function recordatorios(){
 }
 function pintarAvisos(){
   const it=recordatorios(), vistos=leer();
+  const recent=document.getElementById('recent-notices');recent.replaceChildren();
+  for(const item of it.slice(0,3)){const row=document.createElement('article'),label=document.createElement('small'),title=document.createElement('strong'),detail=document.createElement('p');label.textContent=item.f;title.textContent=item.titulo;detail.textContent=item.texto;row.append(label,title,detail);recent.append(row);}
+  if(!it.length)recent.textContent='Sin avisos para esta fecha.';
   set('[data-badge]',it.filter(x=>x.activo&&!vistos.includes(x.id)).length||'');
   const bloque=(g,t)=>{const l=it.filter(x=>x.g===g); return l.length?`<div class="grupo">${t}</div>`+l.map(x=>`<div class="aviso${g==='hoy'?' hoy':''}${x.activo&&!vistos.includes(x.id)?' nuevo':''}"><span class="ti t-${x.tipo}">${I[x.tipo]||I.seguridad}</span><div><span class="f">${x.f}</span><b>${x.titulo}</b><p>${x.texto}</p></div></div>`).join(''):''};
   const html=bloque('hoy','Hoy y mañana')+bloque('prox','Próximas visitas y recojos')+bloque('seg','Seguridad');
@@ -276,7 +282,7 @@ function cerrar(){ $$('.panel.on').forEach(p=>p.classList.remove('on')); velo.cl
 function abrir(id,btn){
   cerrar(); const p=document.getElementById(id); p.classList.add('on'); velo.classList.add('on');
   const r=btn.getBoundingClientRect(); const w=p.offsetWidth;
-  p.style.top=Math.min(r.bottom+10,window.innerHeight-p.offsetHeight-16)+'px';
+  p.style.top=Math.max(8,Math.min(r.bottom+10,window.innerHeight-p.offsetHeight-16))+'px';
   p.style.left=Math.max(16,Math.min(r.right-w,window.innerWidth-w-16))+'px';
   if(id==='pAvisos'){ try{localStorage.setItem(LS,JSON.stringify(recordatorios().map(a=>a.id)))}catch(e){} setTimeout(pintarAvisos,1500); set('[data-badge]',''); }
 }
