@@ -3,6 +3,8 @@
   'use strict';
   if (global.GTOStatus) return;
   const BASE = new URL('.', document.currentScript.src).href;
+  // Cierre de sesión por inactividad (5 min) en todos los sistemas que usan esta barra.
+  try { if (!document.getElementById('gto-inactividad-js')) { const s = document.createElement('script'); s.id = 'gto-inactividad-js'; s.src = BASE + 'gto-inactividad.js?v=20261119'; s.async = true; document.head.appendChild(s); } } catch (e) { /* sin cierre automático */ }
   const mounts = new WeakMap();
   const dateFormat = new Intl.DateTimeFormat('es-PE', {timeZone:'America/Lima',weekday:'long',day:'numeric',month:'long',year:'numeric'});
   const clockFormat = new Intl.DateTimeFormat('es-PE', {timeZone:'America/Lima',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
