@@ -221,12 +221,18 @@ async function tipoCambio(){
  const logout=originalHeader?.querySelector('#logout,#b-out')||
    document.querySelector('.sidebar-logout,.signout-button')||
    (moduleName==='Logística y Compras'?Array.from(document.querySelectorAll('aside button')).find(b=>/^(cerrar sesión|salir)$/i.test(b.textContent.trim())):null);
- const account=originalHeader?.querySelector('.workspace-person b,.user span,.user')?.textContent.trim();
+ // Nombre y cargo por separado (sin el texto del botón Salir que está dentro del mismo bloque).
+ const accountBox=originalHeader?.querySelector('.workspace-person,.user');
+ const accountName=accountBox?.querySelector('b,strong,span');
+ const accountClean=n=>{if(!n)return '';const c=n.cloneNode(true);c.querySelectorAll('button,a,small,svg').forEach(x=>x.remove());return c.textContent.replace(/\s+/g,' ').trim();};
+ const account=accountClean(accountName||accountBox);
+ const accountRole=accountBox?.querySelector('small')?.textContent.replace(/\s+/g,' ').trim()||'';
  const toolsSummary=el('summary','',account?'Mi cuenta':'Herramientas');
  toolsMenu.append(toolsSummary);
  const toolPanel=el('div','gto-toolbar-popover');
  toolsMenu.append(toolPanel);
- if(account)toolPanel.append(el('strong','gto-toolbar-account',account));
+ if(account){const acc=el('strong','gto-toolbar-account',account);acc.style.display='block';toolPanel.append(acc);
+  if(accountRole&&accountRole!==account){const rol=el('small','gto-toolbar-account-rol',accountRole);rol.style.cssText='display:block;margin:2px 0 8px;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;opacity:.7';toolPanel.append(rol);}}
  const moved=[];
  function addAction(container,label,action){
    const button=el('button','gto-toolbar-action',label);
